@@ -440,7 +440,7 @@ jQuery(document).ready(function(){
 			preventDuplicates: true,
 			<?php if(!empty($class->instructors) and is_array($class->instructors)): ?>
 			prePopulate: [
-				<?php foreach($class->instructors as $instructor): ?>
+				<?php foreach($class->instructors as $instructor): if(!$instructor->loaded) continue; ?>
 				{id: <?=$instructor->instrid;?>, name: "<?=$instructor->name;?>"},
 				<?php endforeach; ?>
 			]

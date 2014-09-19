@@ -31,11 +31,6 @@ $mainconfig = array(
 				'<action:\w+>'=>'site/<action>',
 			),
 		),
-
-		'errorHandler'=>array(
-			// use 'site/error' action to display errors
-            'errorAction'=>'site/error',
-        ),
 		'log'=>array(
 			'class'=>'CLogRouter',
 			'routes'=>array(
@@ -57,8 +52,8 @@ $mainconfig = array(
 	// using Yii::app()->params['paramName']
 	'params'=>array(
 		'syllabus_dir'=>'C:/archive/',
-        'LOCALAPP_JQUERY_VER'       => '2.1.1',
-        'LOCALAPP_JQUERYUI_VER'     => '1.11.0'
+        'JQUERY_VERSION'       => '2.1.1',
+        'JQUERYUI_VERSION'     => '1.11.0'
 	),
 	'catchAllRequest'=>file_exists(dirname(__FILE__).'/site.maintenance') ? array('site/maintenance') : null,
 );

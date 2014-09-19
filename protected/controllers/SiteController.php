@@ -6,9 +6,9 @@ class SiteController extends Controller
 	public function actionIndex()
 	{
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/jquery.tipTip.js");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/sortElements/jquery.sortElements.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/tipTip.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/jquery.tipTip.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/sortElements/jquery.sortElements.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/tipTip.css");
 		
 		$this->render('index');
 	}
@@ -90,9 +90,9 @@ class SiteController extends Controller
 	public function actionSearch()
 	{
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/jquery.tipTip.js");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/sortElements/jquery.sortElements.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/tipTip.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/jquery.tipTip.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/sortElements/jquery.sortElements.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/tipTip.css");
 		
 		$this->render("search");
 	}
@@ -128,8 +128,8 @@ class SiteController extends Controller
 		}
 		$params["class"] = $class;
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/jquery.tipTip.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/tipTip.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/jquery.tipTip.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/tipTip.css");
 		
 		$this->render("permalink",$params);
 	}
@@ -150,13 +150,13 @@ class SiteController extends Controller
 		}
 		
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tokenInput/src/jquery.tokeninput.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tokenInput/styles/token-input-facebook.css");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/style.css");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/jquery.tipTip.js");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/sortElements/jquery.sortElements.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/tipTip.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tokenInput/src/jquery.tokeninput.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tokenInput/styles/token-input-facebook.css");
+        $cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/style.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/jquery.tipTip.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/sortElements/jquery.sortElements.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/tipTip.css");
 		
 		$params = array();
 		
@@ -180,13 +180,13 @@ class SiteController extends Controller
 		}
 		
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tokenInput/src/jquery.tokeninput.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tokenInput/styles/token-input-facebook.css");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/style.css");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/jquery.tipTip.js");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/sortElements/jquery.sortElements.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/tipTip.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tokenInput/src/jquery.tokeninput.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tokenInput/styles/token-input-facebook.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/style.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/jquery.tipTip.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/sortElements/jquery.sortElements.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/tipTip.css");
 		
 		$params = array();
 		if(!isset($_REQUEST["cid"])) {
@@ -248,9 +248,9 @@ class SiteController extends Controller
 		$params["users"] = $usergroup->users;
 		
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/cookie/jquery.cookie.js");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/jquery.tipTip.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/tipTip.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/cookie/jquery.cookie.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/jquery.tipTip.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/tipTip.css");
 		
 		$this->render("users",$params);
 	}
@@ -327,9 +327,9 @@ class SiteController extends Controller
 		}
 	
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/spass/jquery.spass.js");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/style.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/spass/jquery.spass.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/style.css");
 		
 		$this->render('edituser',$params);
 	}
@@ -405,9 +405,9 @@ class SiteController extends Controller
 		$params["user"] = $user;
 	
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/spass/jquery.spass.js");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/style.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/spass/jquery.spass.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/style.css");
 		
 		$this->render('edituser',$params);
 	}
