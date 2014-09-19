@@ -1,0 +1,77 @@
+<?php
+
+/**
+ * UserIdentity represents the data needed to identity a user.
+ * It contains the authentication method that checks if the provided
+ * data can identity the user.
+ */
+class UserIdentity extends CUserIdentity
+{
+	public function authenticate()
+	{
+
+		$this->errorCode=self::ERROR_NONE;
+
+		$authenticated = false;
+		$username = $this->username;
+		$password = $this->password;
+		
+		// Check if user exists or is locked out
+		$user = new UserObj($username);
+		if($user->loaded and ($user->active==0 or $user->attempts>5))
+		{
+			$this->errorCode=2;
+			return !$this->errorCode;
+		}
+		
+		$adauth = new ADAuth("adcontroller");
+		
+		if($adauth->authenticate($username, $password)){
+			
+			// Empty for now
+			if(!$user->loaded)
+			{
+				$info = $adauth->lookup_user();
+				$user->email = $info[0]["mail"][0];
+				$user->name = $info[0]["displayname"][0];
+				
+				$user->permission = 1;
+				$valid_groups = array(
+					"ASSETT-Programming"=>10,
+					"ASSETT-Admins"=>10,
+					"ASSETT-TTAs"=>3,
+					"ASSETT-Admins"=>3,
+					"ASSETT-Core"=>3,
+					"ASSETT-Staff"=>3,
+					"ASSETT-ATCs"=>3,
+					"ASSETT-Design"=>3,
+				);
+				foreach($valid_groups as $group=>$permlevel) {
+					if($adauth->is_member($group)) {
+						$user->permission = $permlevel;
+						$user->member = $group;
+						break;
+					}
+				}
+				
+				if($user->permission==1) {
+					$this->errorCode = 3;
+				}
+			}
+			if(!$this->errorCode) {
+				$user->last_login = date("Y-m-d H:i:s");
+				$user->attempts = 0;
+				$user->save();
+				$user->load();
+			}
+		} else {
+			if($user->loaded)
+			{
+				$user->attempts++;
+				$user->save();
+			}
+			$this->errorCode=1;
+		}
+		return !$this->errorCode;
+	}
+}

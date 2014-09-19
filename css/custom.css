@@ -1,0 +1,101 @@
+/** Users.php **/
+table#user-form tr td.label {
+	text-align:right;
+	border-right:1px solid #ccc;
+	padding-top:9px;
+	padding-right:10px;
+	margin:0;
+	width:150px;
+	vertical-align:top;
+}
+table#user-form  tr td.input {
+	padding-left:10px;
+	width:200px;
+	vertical-align:top;
+}
+table#user-form  tr td.hint {
+	font-size:11px;
+	color:#999;
+	width:auto;
+}
+table#user-form label {
+	font-weight:bold;
+}
+table#user-form input {
+	letter-spacing:1px;
+	padding:3px;
+}
+table#class-form select {
+	letter-spacing:1px;
+	padding:3px;
+	width:212px;
+}
+table#class-form  tr.footer td {
+	padding-top:20px;
+}
+table#class-form tr td.label {
+	text-align:right;
+	border-right:1px solid #ccc;
+	width:100px;
+	padding-top:9px;
+	padding-right:10px;
+	margin:0;
+	width:120px;
+	vertical-align:top;
+}
+table#class-form  tr td.input {
+	padding-left:10px;
+	width:130px;
+	vertical-align:top;
+}
+table#class-form  tr td.hint {
+	font-size:11px;
+	color:#999;
+	width:auto;
+}
+table#class-form label {
+	font-weight:bold;
+}
+table#class-form input {
+	letter-spacing:1px;
+	padding:3px;
+}
+table#class-form select {
+	letter-spacing:1px;
+	padding:3px;
+	width:212px;
+}
+table#class-form  tr.footer td {
+	padding-top:20px;
+}
+table#class-form tr.breaker td {
+	border-bottom:1px solid #ccc;
+	font-weight:bold;
+	color:#003366;
+	padding-top:15px;
+	font-size:14px;
+}
+.required {
+	color:#f00;
+	font-weight:bold;
+}
+.unsecure {
+	color:#f00;
+}
+.secure {
+	color:#0a0;
+}
+div.flash {
+	padding:7px;
+	font-size: 13px;
+	margin-bottom:10px;
+	margin-top:5px;
+	padding-left:10px;
+}
+
+div.title {
+	font-weight:bold;
+	border-bottom: 1px solid #09f;
+	font-size:14px;
+	margin-bottom:5px;
+}

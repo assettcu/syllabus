@@ -1,0 +1,16 @@
+RewriteEngine on
+
+# if a directory or a file exists, use it directly
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# otherwise forward it to index.php
+RewriteRule . index.php
+
+#Handled in Software
+#Order Deny,Allow
+#Deny from all
+#Allow from 128.138.0.0/16 198.11.24.0/23 172.21.32.0/22 198.11.26.126 198.11.26.127 172.23.0.0/16 172.21.0.0/16 10.200.0.0/14
+
+ErrorDocument 403 /access.html
+SetEnvIfNoCase Request_URI ^/download\.php no-gzip dont-vary
