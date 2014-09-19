@@ -1,0 +1,303 @@
+body {
+	margin: 0;
+	padding: 0;
+	color: #555;
+	font: normal 10pt;
+	font-family: Verdana, Geneva, sans-serif;
+	background: #dfdfdf;
+}
+
+#page {
+	margin-bottom: 5px;
+	background: white;
+	border: 1px solid #0e4b97;
+	border-top:none;
+}
+
+#header {
+	background: url("../images/university_of_colorado_white.png") no-repeat scroll left top #FFFFFF;
+	color: #f0f0f0;
+	clear: both;
+	height:42px;
+	margin: 0;
+	padding-top: 110px;
+	position: relative;
+	width: 100%;
+}
+
+#content {
+    padding: 20px;
+}
+
+#sidebar {
+	padding: 20px 20px 20px 0;
+}
+
+#footer {
+	position: relative;
+	background-color: #fff;
+	color: #000;
+	font-size: 0.9em;
+	text-align: center;
+	padding: 10px;
+	border-top: 1px solid #0e4b97;
+	margin: 0;
+}
+
+#footer-links {
+	padding-left: -100px;	
+}
+
+#assett-logo {
+	position: absolute;
+	top: 15px;
+	left: 15px;
+	width: 153px;
+	height: 55px;
+	background-image: url("../images/small_assett_logo.png");
+	background-repeat: no-repeat;
+	margin-right: 10px;
+}
+
+#assett-logo a {
+	display: block;
+	width: 100%;
+	height: 100%;	
+}
+
+#logo {
+	background: #1756a2;
+	height:42px;
+}
+
+#logo-text
+{
+	font-family:  Gill Sans MT, sans-serif;
+	font-variant: small-caps;
+	font-size: 200%;
+	width:300px;
+	display:inline-block;
+	padding: 4px 20px 0px 70px;
+}
+
+#mainmenu {
+	float:right;
+	display:block;
+}
+
+#mainmenu a {
+	font-size:13px;
+	display:block;
+	float:right;
+	line-height:42px;
+	color: #fff;
+	text-decoration: none;
+	border-left:1px solid #fff;
+	padding-left:10px;
+	padding-right:10px;
+	cursor:pointer;
+	margin:0px;
+}
+
+#mainmenu a:hover {
+	background-image:url(../images/bg-header-hover.png);
+	color:#000;
+}
+
+div.flash-error, div.flash-notice, div.flash-success {
+	padding:.8em;
+	margin-bottom:1em;
+	border:2px solid #ddd;
+}
+
+div.flash-error {
+	background:#FBE3E4;
+	color:#8a1f11;
+	border-color:#FBC2C4;
+}
+
+div.flash-notice
+{
+	background:#FFF6BF;
+	color:#514721;
+	border-color:#FFD324;
+}
+
+div.flash-success
+{
+	background:#E6EFC2;
+	color:#264409;
+	border-color:#C6D880;
+}
+
+div.flash-error a
+{
+	color:#8a1f11;
+}
+
+div.flash-notice a {
+	color:#514721;
+}
+
+div.flash-success a {
+	color:#264409;
+}
+
+div.form .rememberMe label
+{
+	display: inline;
+}
+
+div.view {
+	padding: 10px;
+	margin: 10px 0;
+	border: 1px solid #C9E0ED;
+}
+
+div.search-form {
+	padding: 10px;
+	margin: 10px 0;
+	background: #eee;
+}
+
+.portlet {
+
+}
+
+.portlet-decoration {
+	padding: 3px 8px;
+	background: #B7D6E7;
+	border-left: 5px solid #6FACCF;
+}
+
+.portlet-title {
+	font-size: 12px;
+	font-weight: bold;
+	padding: 0;
+	margin: 0;
+	color: #298dcd;
+}
+
+.portlet-content {
+	font-size:0.9em;
+	margin: 0 0 15px 0;
+	padding: 5px 8px;
+	background:#EFFDFF;
+}
+
+.portlet-content ul {
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
+	margin: 0;
+	padding: 0;
+}
+
+.portlet-content li {
+	padding: 2px 0 4px 0px;
+}
+
+.operations {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+.operations li {
+	padding-bottom: 2px;
+}
+
+.operations li a {
+	font: bold 12px Arial;
+	color: #0066A4;
+	display: block;
+	padding: 2px 0 2px 8px;
+	line-height: 15px;
+	text-decoration: none;
+}
+
+.operations li a:visited {
+	color: #0066A4;
+}
+
+.operations li a:hover {
+	background: #80CFFF;
+}
+
+button {
+	background-color:#fff;
+	border:1px solid #aaa;
+	color:#555;
+	padding:5px 10px;
+	cursor:pointer;
+}
+
+button:disabled {
+	background-color:#f0f0f0;
+	border:1px solid #aaa;
+	color:#555;
+	padding:5px 10px;
+}
+
+div.input-container {
+	padding:5px;
+}
+
+div.input-container input {
+	margin-top:5px;
+	font-size:12px;
+	padding:3px;
+	letter-spacing:2px;
+}
+
+div.subtitle {
+	padding:10px;
+}
+
+div.smallcaps {
+	font-size:11px;
+	font-variant:small-caps;
+}
+
+h1 {
+	text-align:left;
+	padding-bottom:5px;
+	border-bottom:1px solid #000;
+	font-size:16px;
+	font-weight:bold;
+	letter-spacing:1px;
+	margin-bottom:10px;
+	margin-top:5px;
+}
+
+h2 {
+	margin-bottom:10px;
+	text-align:center;
+	padding-bottom:5px;
+	border-bottom:1px solid #003;
+}
+
+div.subtitle {
+	padding:10px;
+}
+
+.lalign {
+	text-align:left;
+}
+
+.calign {
+	text-align:center;
+}
+.ralign {
+	text-align:right;
+}
+
+.image404 {
+	margin:35px;
+	margin-left:150px;
+	font-size:35px;
+}
+
+.image404 div.subtitle {
+	font-size:15px;
+}
