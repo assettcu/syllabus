@@ -1,11 +1,10 @@
 <?php
+StdLib::Functions();
+
 $flashes = new Flashes;
 $flashes->render();
 
-$start = microtime(true);
-$manager = new Manager;
-$courses = $manager->load_unique_courses();
-
+$courses = load_unique_courses();
 ?>
 <div class="ui-state-default ui-corner-all" style="padding:5px;margin-bottom:15px;font-size:14px;text-align:center;">
     Welcome to the Syllabus Archive! You may search the archive for past syllabi or browse it by selecting one of the department buttons below.

@@ -23,6 +23,21 @@ class SiteController extends Controller
 			}
 	    }
 	}
+    
+    public function actionSyllabus() {
+        
+        
+        $this->render('syllabus');
+    }
+
+    public function actionDiagnostics() {
+        if(!StdLib::is_programmer()) {
+            $this->redirect('index');
+            exit;
+        }
+        
+        $this->render("diagnostics");
+    }
 
 	public function actionLogin()
 	{
@@ -78,9 +93,12 @@ class SiteController extends Controller
 	public function actionCourse()
     {
         if(isset($_GET["prefix"]) and !isset($_GET["num"])) {
-            $this->render("course1");
+            $params["prefix"] = $_GET["prefix"];
+            $this->render("course1",$params);
         } else if(isset($_GET["prefix"],$_GET["num"])) {
-            $this->render("course2");
+            $params["prefix"] = $_GET["prefix"];
+            $params["num"] = $_GET["num"];
+            $this->render("course2",$params);
         } else {
             Yii::app()->user->setFlash("warning","You must select a course in order to view its syllabi.");
             $this->redirect(Yii::app()->homeUrl);
@@ -144,10 +162,12 @@ class SiteController extends Controller
 		if(Yii::app()->user->isGuest) {
 			$this->loginRedirect();
 		}
-		if(!$this->authLevel(Yii::app()->user->name,2)) {
-			Yii::app()->user->setFlash("error","You do not have permission to access this part of the application.");
-			$this->redirect(Yii::app()->createUrl('index'));
-		}
+        $user = new UserObj(Yii::app()->user->name);
+        if($user->atleast_permission("manager") === false) {
+            Yii::app()->user->setFlash("error","You do not have permission to access this part of the application.");
+            $this->redirect(Yii::app()->createUrl('index'));
+            exit;
+        }
 		
 		$cs = Yii::app()->getClientScript();
 		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tokenInput/src/jquery.tokeninput.js");
@@ -214,9 +234,11 @@ class SiteController extends Controller
 		if(Yii::app()->user->isGuest) {
 			$this->loginRedirect();
 		}
-		if(!$this->authLevel(Yii::app()->user->name)) {
+        $user = new UserObj(Yii::app()->user->name);
+		if($user->atleast_permission("manager") === false) {
 			Yii::app()->user->setFlash("error","You do not have permission to access this part of the application.");
 			$this->redirect(Yii::app()->createUrl('index'));
+            exit;
 		}
 		
 		$params = array();
@@ -412,30 +434,8 @@ class SiteController extends Controller
 		$this->render('edituser',$params);
 	}
 
-	public function actionArchive(){
-		if(Yii::app()->user->isGuest) {
-			$this->loginRedirect();
-		}
-		if(!$this->authLevel(Yii::app()->user->name,2)){
-			Yii::app()->user->setFlash("error","You are not allowed to do that action with your permissions.");
-			$this->redirect(Yii::app()->createUrl('index'));
-			exit;
-		}
-		
-		$this->render("archive");
-	}
-
 	public function actionRunOnce()
 	{
-		if(Yii::app()->user->isGuest) {
-			$this->loginRedirect();
-		}
-		if(!$this->authLevel(Yii::app()->user->name,10)){
-			Yii::app()->user->setFlash("error","You are not allowed to do that action with your permissions.");
-			$this->redirect(Yii::app()->createUrl('index'));
-			exit;
-		}
-		
 		$this->render("runonce");
 	}
 

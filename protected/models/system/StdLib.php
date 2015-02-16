@@ -394,4 +394,12 @@ class StdLib
             break;
         }    
     }
+
+    public static function pre() {
+        echo "<pre>";
+    }
+    
+    public static function Functions() {
+        require_once ROOT."/protected/models/Functions.php";
+    }
 }

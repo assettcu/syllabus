@@ -1,10 +1,6 @@
 <?php
-
-$prefix = $_GET["prefix"];
-
-$manager = new Manager;
-$courses = $manager->load_courses($prefix);
-
+StdLib::Functions();
+$courses = load_courses($prefix);
 ?>
 <style>
 table {

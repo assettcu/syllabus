@@ -18,10 +18,12 @@ defined('WEB_ROOT') or define('WEB_ROOT',dirname($_SERVER["HTTP_HOST"].$_SERVER[
 // define local library paths (see StdLib class)
 defined('LOCAL_LIBRARY_PATH') or define('LOCAL_LIBRARY_PATH',ROOT.'\\library\\');
 defined('LOCAL_IMAGE_LIBRARY') or define('LOCAL_IMAGE_LIBRARY',LOCAL_LIBRARY_PATH."images\\");
+defined('LOCAL_ARCHIVE') or define('LOCAL_ARCHIVE','C:\\archive\\Syllabus Archive\\');
 
 // define web library paths (see StdLib class)
 defined('WEB_LIBRARY_PATH') or define('WEB_LIBRARY_PATH','//'.WEB_ROOT.'/library/');
 defined('WEB_IMAGE_LIBRARY') or define('WEB_IMAGE_LIBRARY',WEB_LIBRARY_PATH."images/");
+defined('WEB_ARCHIVE') or define('WEB_ARCHIVE','//'.WEB_ROOT.'/archive/');
 
 require_once($yii);
 Yii::createWebApplication($config)->run();

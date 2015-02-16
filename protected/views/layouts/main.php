@@ -1,7 +1,9 @@
 <?php
 $this->pageTitle = "Syllabus Archive";
 // Theme name from Jquery UI themes
-$theme = "smoothness2";
+$theme = "base";
+
+$COREUSER = (!Yii::app()->user->isGuest) ? new UserObj(Yii::app()->user->name) : new UserObj();
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -11,6 +13,8 @@ $theme = "smoothness2";
 	<meta name="language" content="en" />
 
 	<link rel="shortcut icon" href="<?php echo Yii::app()->request->baseUrl; ?>/images/favicon.ico">
+    <link rel="stylesheet" href="<?php echo Yii::app()->baseUrl; ?>/library/fonts/icomoon/style.css" />
+    
 	<!-- blueprint CSS framework -->
 	<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/screen.css" media="screen, projection" />
 	<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/print.css" media="print" />
@@ -57,12 +61,12 @@ $theme = "smoothness2";
 				<?php else: ?>
 				<a href="<?=Yii::app()->createUrl('logout')?>">Logout (<?=Yii::app()->user->name?>)</a>
 				<a href="<?=Yii::app()->createUrl('aboutus')?>">About Us</a>
-					<?php if(Yii::app()->user->getState("_user")->permission_level>=10): ?>
+					<?php if($COREUSER->atleast_permission("administrator")): ?>
 					<a href="<?=Yii::app()->createUrl('archive')?>">Archive</a>
 					<a href="<?=Yii::app()->createUrl('users')?>">Users</a>
 					<?php endif; ?>
-					<?php if(Yii::app()->user->getState("_user")->permission_level>1): ?>
-					<a href="<?=Yii::app()->createUrl('addclass')?>">Add Syllabus</a>
+					<?php if($COREUSER->atleast_permission("manager")): ?>
+					<a href="<?=Yii::app()->createUrl('syllabus')?>">Add Syllabus</a>
 					<?php endif; ?>
 				<?php endif; ?>
 				<a href="<?=Yii::app()->baseUrl;?>/">Home</a>

@@ -3,13 +3,14 @@
 $archivedir = 'C:/archive';
 $group = new GroupObj(new ClassObj);
 
-usort($group,"sort_by_prefix");
-
 $tablecontents = "";
 $missing = 0;
 $syllabi_count = 0;
 if ($handle = opendir($archivedir)) {
     while (false !== ($entry = readdir($handle))) {
+        if(is_file($archivedir.'/'.$entry)) {
+            continue;
+        }
         if ($entry != "." && $entry != "..") {
             $syllabi_count += count(scandir($archivedir.'/'.$entry))-2; # Remove '.' and '..' from results
         }

@@ -16,19 +16,17 @@ class UserIdentity extends CUserIdentity
 		
 		$user = new UserObj($username);
 		if(!$adauth->authenticate($username, $password)){
-			if(!$user->loaded) {
-				$this->errorCode=2;
-			} else {
-				if(!$user->validate_password($password,$user->password_hash)) {
-					$this->errorCode=3;
-				}
-			}
+			$this->errorCode=3;
 		}
-		
-		if($this->errorCode==0) {
-			$user->login();
-			Yii::app()->user->setState("_user",$user);
-		} else {
+        $info = $adauth->lookup_user();
+		if($info["count"] == 1) {
+		    $user->fullname = $info[0]["displayname"][0];
+		}
+        if(!$user->save()) {
+            StdLib::vdump($user->get_error());
+        }
+        
+		if($this->errorCode!=0) {
 			$syslog = new SyslogObj();
 			$syslog->username = $this->username;
 			$syslog->ipaddress = $_SERVER['REMOTE_ADDR'];
