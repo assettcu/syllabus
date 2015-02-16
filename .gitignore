@@ -7,3 +7,5 @@ themes/classic/views/
 protected/config/main-ext.php
 archive/*.*
 *.db
+.gitignore
+.project
