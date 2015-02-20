@@ -1,11 +1,9 @@
 <?php
-
-$prefix = $_GET["prefix"];
-
-$manager = new Manager;
-$courses = $manager->load_courses($prefix);
-
+StdLib::Functions();
+$courses = load_courses($prefix);
 ?>
+<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/bootstrap.css" />
+<script type="text/javascript" src="<?php echo WEB_LIBRARY_PATH; ?>jquery/modules/bootstrap/bootstrap.min.js"></script>
 <style>
 table {
     width:100%;
@@ -29,12 +27,12 @@ div.breadcrumbs {
 }
 </style>
 
-<div class="breadcrumbs">
-    <a href="<?php echo Yii::app()->homeUrl; ?>">Home</a> &gt;
-    <a href="<?php echo Yii::app()->createUrl('course');?>?prefix=<?php echo $prefix; ?>">Explore Course Archive [<?php echo $prefix; ?>]</a>
-</div>
+<ul class="breadcrumb">
+    <li><a href="<?php echo Yii::app()->homeUrl; ?>">Home</a></li>
+    <li><a href="<?php echo Yii::app()->createUrl('course');?>?prefix=<?php echo $prefix; ?>">[<?php echo $prefix; ?>] Explore Course Archive</a></li>
+</ul>
 
-<h1>Explore Course Archive [<?php echo $prefix; ?>]</h1>
+<h1>[<?php echo $prefix; ?>] Explore Course Archive</h1>
 
 <table>
     <thead>

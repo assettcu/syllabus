@@ -29,13 +29,9 @@ $mainconfig = array(
 				'<id:\d+>'=>'site/view',
 				'<action:\w+>/<id:\d+>'=>'site/<action>',
 				'<action:\w+>'=>'site/<action>',
+				'archive/<name:\w+>'=>'archive/<name>'
 			),
 		),
-
-		'errorHandler'=>array(
-			// use 'site/error' action to display errors
-            'errorAction'=>'site/error',
-        ),
 		'log'=>array(
 			'class'=>'CLogRouter',
 			'routes'=>array(
@@ -44,11 +40,9 @@ $mainconfig = array(
 					'levels'=>'error, warning',
 				),
 				// uncomment the following to show log messages on web pages
-				/*
 				array(
 					'class'=>'CWebLogRoute',
 				),
-				*/
 			),
 		),
 	),
@@ -56,11 +50,10 @@ $mainconfig = array(
 	// application-level parameters that can be accessed
 	// using Yii::app()->params['paramName']
 	'params'=>array(
-		'syllabus_dir'=>'C:/archive/',
-        'LOCALAPP_JQUERY_VER'       => '2.1.1',
-        'LOCALAPP_JQUERYUI_VER'     => '1.11.0'
+		'syllabus_dir'        => 'C:/web/assettdev.colorado.edu/syllabus/archive/',
+        'JQUERY_VERSION'      => '2.1.1',
+        'JQUERYUI_VERSION'    => '1.11.0'
 	),
-	'catchAllRequest'=>file_exists(dirname(__FILE__).'/site.maintenance') ? array('site/maintenance') : null,
 );
 
 

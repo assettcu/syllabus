@@ -1,14 +1,16 @@
 <?php
 
-class SiteController extends Controller
+require "BaseController.php";
+
+class SiteController extends BaseController
 {
 	/** DEFAULT ACTIONS **/
 	public function actionIndex()
 	{
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/jquery.tipTip.js");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/sortElements/jquery.sortElements.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/tipTip.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/jquery.tipTip.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/sortElements/jquery.sortElements.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/tipTip.css");
 		
 		$this->render('index');
 	}
@@ -23,6 +25,269 @@ class SiteController extends Controller
 			}
 	    }
 	}
+    
+    public function actionAdd() {
+        $this->noGuest();
+        
+        # See if a topic/link was submitted
+        if(isset($_POST["uniqueformid"],$_POST["datetime"])) {
+            StdLib::Functions();
+            try {
+                if(is_valid_form_id($_POST["uniqueformid"], $_POST["datetime"])) {
+                    
+                    # Grab the syllabus file and start up the File System
+                    $file = $_FILES["syllabus"];
+                    $fileparts = pathinfo($file["name"]);
+                    $fs = new FileSystem();
+                    if(!$fs->check_valid_extension($fileparts["extension"])) {
+                        throw new Exception("Extension was invalid: ".$fileparts["extension"]);
+                    }
+                    $fs->process_file_upload($file);
+                    $fs->upload_to("C:/web/assettdev.colorado.edu/syllabus/archive/temp/");
+                    if(!$fs->is_uploaded()) {
+                        throw new Exception("Could not upload file. ".$fs->get_error());
+                    }
+                    $file_locations = $fs->get_files_uploaded_location();
+                    $file_location = @$file_locations[0];
+                    
+                    $sections = explode(",",$_POST["section"]);
+                    # Check the User permissions.
+                    # For now we are allowing any managers to have access to upload syllabi to the Archive
+                    $user = new UserObj(Yii::app()->user->name);
+                    if(!$user->atleast_permission("manager")) {
+                        throw new Exception("You cannot add syllabi at this time. Your permissions restrict your access.");
+                    }
+                    # See if we saved a syllabus (maybe multiple sections and one section already exists)
+                    $saved_at_least_one = FALSE;
+                    
+                    # Loop through each section and save each as a separate class
+                    foreach($sections as $section) {
+                        $section = trim($section);
+                        if(!preg_match("/[0-9]{3}/",$section)) {
+                            continue;
+                        }
+                        $CS = new CourseSyllabusObj();
+                        $CS->prefix = $_POST["prefix"];
+                        $CS->num = $_POST["num"];
+                        $CS->title = $_POST["title"];
+                        $CS->special_topics_title = $_POST["special_topics_title"];
+                        $CS->term = $_POST["term"];
+                        $CS->year = $_POST["year"];
+                        $CS->recitation = $_POST["recitation"];
+                        $CS->restricted = $_POST["restricted"];
+                        $CS->section = $section;
+                        
+                        # See if this Course Syllabus exists and if we have permission to overwrite
+                        $CS->id = $CS->generate_id();
+                        $CS->load();
+                        if($CS->loaded and $_POST["overwrite"] == "false") {
+                            Yii::app()->user->setFlash('warning',"One Course Syllabus section already exists. The system skipped overwriting this course syllabus.");
+                            continue;
+                        }
+                        
+                        # Add Instructors to Course Syllabus
+                        $instructors = explode("\n",$_POST["instructors"]);
+                        foreach($instructors as $fullname) {
+                            $instructor = new InstructorObj();
+                            $instructor->name = $fullname;
+                            $instructor->load();
+                            if(!$instructor->loaded) {
+                                if(!$instructor->save()) {
+                                    Yii::app()->user->setFlash("warning","Could not save instructor <i>".$instructor->name."</i> for some reason. ".$instructor->get_error());
+                                    continue;
+                                }
+                            }
+                            $CS->instructors[] = $instructor->instrid;
+                        }
+                        
+                        # Save!
+                        if(!$CS->save()) {
+                            throw new Exception("Could not save Course Syllabus: ".$CS->get_error());
+                        }
+                        
+                        # Move file to permanent home in the archive
+                        copy($file_location, ROOT."/archive/".$CS->id.".".$fileparts["extension"]);
+                        
+                        # Made it to here? We must have saved at least one course syllabus!
+                        $saved_at_least_one = TRUE;
+                    }
+                }
+                else {
+                    throw new Exception("Malformed form ID.");
+                }
+                
+                # Let's set a message that we saved at least one file
+                if($saved_at_least_one) {
+                    Yii::app()->user->setFlash("success","Successfully saved course syllabus to the archive!");
+                    if($_POST["savetype"] == "exit") {
+                        $this->redirect("index");
+                        exit;
+                    }
+                }
+                else {
+                    Yii::app()->user->setFlash("info","Did not save any course syllabi.");
+                }
+                
+                # Remove the temporary file
+                if(is_file($file_location)) {
+                    unlink($file_location);
+                }
+            }
+            # Exception handling here
+            catch(Exception $e) {
+                Yii::app()->user->setFlash("warning",$e->getMessage());
+            }
+        }
+        
+        $this->render('addsyllabus');
+    }
+
+    public function actionEdit() {
+        $this->noGuest();
+        
+        if(!isset($_REQUEST["id"])) {
+            Yii::app()->user->setFlash('warning','Cannot edit: Invalid course syllabus ID.');
+            $this->redirect('index');
+            exit;
+        }
+        
+        $CS = new CourseSyllabusObj($_REQUEST["id"]);
+        if(!$CS->loaded) {
+            Yii::app()->user->setFlash('warning','Could not load Course Syllabus. Something went really wrong.');
+            $this->redirect('index');
+            exit;
+        }
+        $syllabus = LOCAL_ARCHIVE.$CS->id;
+        $CS->find_syllabus_links();
+        $syllabus_links = $CS->syllabus_links;
+        
+        # See if a topic/link was submitted
+        if(isset($_POST["uniqueformid"],$_POST["datetime"])) {
+            StdLib::Functions();
+            try {
+                if(is_valid_form_id($_POST["uniqueformid"], $_POST["datetime"])) {
+                    
+                    unset($CS->id);
+                    # Grab the syllabus file and start up the File System
+                    $file = $_FILES["syllabus"];
+                    # If the user added a file, let's continue with upload
+                    if($file["size"] != 0) {
+                        $fileparts = pathinfo($file["name"]);
+                        $fs = new FileSystem();
+                        if(!$fs->check_valid_extension($fileparts["extension"])) {
+                            throw new Exception("Extension was invalid: ".$fileparts["extension"]);
+                        }
+                        $fs->process_file_upload($file);
+                        $fs->upload_to("C:/web/assettdev.colorado.edu/syllabus/archive/temp/");
+                        if(!$fs->is_uploaded()) {
+                            throw new Exception("Could not upload file. ".$fs->get_error());
+                        }
+                        $file_locations = $fs->get_files_uploaded_location();
+                        $file_location = @$file_locations[0];
+                    }
+                    
+                    $sections = explode(",",$_POST["section"]);
+                    # Check the User permissions.
+                    # For now we are allowing any managers to have access to upload syllabi to the Archive
+                    $user = new UserObj(Yii::app()->user->name);
+                    if(!$user->atleast_permission("manager")) {
+                        throw new Exception("You cannot add syllabi at this time. Your permissions restrict your access.");
+                    }
+                    # See if we saved a syllabus (maybe multiple sections and one section already exists)
+                    $saved_at_least_one = FALSE;
+                    
+                    # Loop through each section and save each as a separate class
+                    foreach($sections as $section) {
+                        
+                        $section = trim($section);
+                        if(!preg_match("/[0-9]{3}/",$section)) {
+                            continue;
+                        }
+                        $CS = new CourseSyllabusObj($_REQUEST["id"]);
+                        $CS->section = $section;
+                        $CS->id = $CS->generate_id();
+                        $CS->load();
+                        
+                        $CS->title = $_POST["title"];
+                        $CS->special_topics_title = $_POST["special_topics_title"];
+                        $CS->recitation = $_POST["recitation"];
+                        $CS->restricted = $_POST["restricted"];
+                        $CS->section = $section;
+                        
+                        # Add Instructors to Course Syllabus
+                        $instructors = explode("\n",$_POST["instructors"]);
+                        foreach($instructors as $fullname) {
+                            $instructor = new InstructorObj();
+                            $instructor->name = $fullname;
+                            $instructor->load();
+                            if(!$instructor->loaded) {
+                                if(!$instructor->save()) {
+                                    Yii::app()->user->setFlash("warning","Could not save instructor <i>".$instructor->name."</i> for some reason. ".$instructor->get_error());
+                                    continue;
+                                }
+                            }
+                            $CS->instructors[] = $instructor->instrid;
+                        }
+                        
+                        $CS->id = $CS->generate_id();
+                        $CS->find_syllabus_links();
+                        
+                        if(!$CS->has_syllabus_file()) {
+                            foreach($syllabus_links as $ext => $link) {
+                                if(!is_null($link)) {
+                                    copy($syllabus.".".$ext, LOCAL_ARCHIVE.$CS->id.".".$ext);
+                                }
+                            }
+                        }
+                        
+                        # Save!
+                        if(!$CS->save()) {
+                            throw new Exception("Could not save Course Syllabus: ".$CS->get_error());
+                        }
+                        
+                        # If the user added a file, let's continue with upload
+                        if($file["size"] != 0) {
+                            # Move file to permanent home in the archive
+                            copy($file_location, ROOT."/archive/".$CS->id.".".$fileparts["extension"]);
+                        }
+                        
+                        # Made it to here? We must have saved at least one course syllabus!
+                        $saved_at_least_one = TRUE;
+                    }
+                }
+                else {
+                    throw new Exception("Malformed form ID.");
+                }
+                
+                # Let's set a message that we saved at least one file
+                if($saved_at_least_one) {
+                    Yii::app()->user->setFlash("success","Successfully saved course syllabus to the archive!");
+                    if($_POST["savetype"] == "exit") {
+                        $this->redirect("index");
+                        exit;
+                    }
+                    else {
+                        $this->redirect(Yii::app()->createUrl('course')."?prefix=".$CS->prefix."&num=".$CS->num);
+                        exit;
+                    }
+                }
+                else {
+                    Yii::app()->user->setFlash("info","Did not save any course syllabi.");
+                }
+                
+                # Remove the temporary file
+                if(isset($file_location) and is_file($file_location)) {
+                    unlink($file_location);
+                }
+            }
+            # Exception handling here
+            catch(Exception $e) {
+                Yii::app()->user->setFlash("warning",$e->getMessage());
+            }
+        }
+        
+        $this->render('editsyllabus', array("CS"=>$CS));
+    }
 
 	public function actionLogin()
 	{
@@ -58,29 +323,18 @@ class SiteController extends Controller
 		Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);
 	}
-	
-	public function beforeAction($action)
-	{
-		if(!Yii::app()->user->isGuest) {
-			$user = Yii::app()->user->getState("_user");
-			if(is_null($user) or !isset($user->loaded)) {
-			}
-			else {
-				$user->load();
-				Yii::app()->user->setState("_user",$user);
-			}
-		}
-		return $action;
-	}
 
 	/** NORMAL PAGES **/
 	
 	public function actionCourse()
     {
         if(isset($_GET["prefix"]) and !isset($_GET["num"])) {
-            $this->render("course1");
+            $params["prefix"] = $_GET["prefix"];
+            $this->render("course1",$params);
         } else if(isset($_GET["prefix"],$_GET["num"])) {
-            $this->render("course2");
+            $params["prefix"] = $_GET["prefix"];
+            $params["num"] = $_GET["num"];
+            $this->render("course2",$params);
         } else {
             Yii::app()->user->setFlash("warning","You must select a course in order to view its syllabi.");
             $this->redirect(Yii::app()->homeUrl);
@@ -90,9 +344,9 @@ class SiteController extends Controller
 	public function actionSearch()
 	{
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/jquery.tipTip.js");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/sortElements/jquery.sortElements.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/tipTip.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/jquery.tipTip.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/sortElements/jquery.sortElements.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/tipTip.css");
 		
 		$this->render("search");
 	}
@@ -128,8 +382,8 @@ class SiteController extends Controller
 		}
 		$params["class"] = $class;
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/jquery.tipTip.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/tipTip.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/jquery.tipTip.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/tipTip.css");
 		
 		$this->render("permalink",$params);
 	}
@@ -144,19 +398,21 @@ class SiteController extends Controller
 		if(Yii::app()->user->isGuest) {
 			$this->loginRedirect();
 		}
-		if(!$this->authLevel(Yii::app()->user->name,2)) {
-			Yii::app()->user->setFlash("error","You do not have permission to access this part of the application.");
-			$this->redirect(Yii::app()->createUrl('index'));
-		}
+        $user = new UserObj(Yii::app()->user->name);
+        if($user->atleast_permission("manager") === false) {
+            Yii::app()->user->setFlash("error","You do not have permission to access this part of the application.");
+            $this->redirect(Yii::app()->createUrl('index'));
+            exit;
+        }
 		
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tokenInput/src/jquery.tokeninput.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tokenInput/styles/token-input-facebook.css");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/style.css");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/jquery.tipTip.js");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/sortElements/jquery.sortElements.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/tipTip.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tokenInput/src/jquery.tokeninput.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tokenInput/styles/token-input-facebook.css");
+        $cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/style.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/jquery.tipTip.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/sortElements/jquery.sortElements.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/tipTip.css");
 		
 		$params = array();
 		
@@ -180,13 +436,13 @@ class SiteController extends Controller
 		}
 		
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tokenInput/src/jquery.tokeninput.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tokenInput/styles/token-input-facebook.css");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/style.css");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/jquery.tipTip.js");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/sortElements/jquery.sortElements.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/tipTip.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tokenInput/src/jquery.tokeninput.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tokenInput/styles/token-input-facebook.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/style.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/jquery.tipTip.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/sortElements/jquery.sortElements.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/tipTip.css");
 		
 		$params = array();
 		if(!isset($_REQUEST["cid"])) {
@@ -214,9 +470,11 @@ class SiteController extends Controller
 		if(Yii::app()->user->isGuest) {
 			$this->loginRedirect();
 		}
-		if(!$this->authLevel(Yii::app()->user->name)) {
+        $user = new UserObj(Yii::app()->user->name);
+		if($user->atleast_permission("manager") === false) {
 			Yii::app()->user->setFlash("error","You do not have permission to access this part of the application.");
 			$this->redirect(Yii::app()->createUrl('index'));
+            exit;
 		}
 		
 		$params = array();
@@ -248,9 +506,9 @@ class SiteController extends Controller
 		$params["users"] = $usergroup->users;
 		
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/cookie/jquery.cookie.js");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/jquery.tipTip.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/tipTip/tipTip.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/cookie/jquery.cookie.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/jquery.tipTip.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/tipTip/tipTip.css");
 		
 		$this->render("users",$params);
 	}
@@ -327,9 +585,9 @@ class SiteController extends Controller
 		}
 	
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/spass/jquery.spass.js");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/style.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/spass/jquery.spass.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/style.css");
 		
 		$this->render('edituser',$params);
 	}
@@ -405,37 +663,15 @@ class SiteController extends Controller
 		$params["user"] = $user;
 	
 		$cs = Yii::app()->getClientScript();
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/spass/jquery.spass.js");
-		$cs->registerScriptFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
-		$cs->registerCssFile(HTTPS."://".LIBRARY_DIRECTORY."/javascript/jquery/modules/toggler/style.css");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/spass/jquery.spass.js");
+		$cs->registerScriptFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/jquery/iphone-style-checkboxes.js");
+		$cs->registerCssFile("//".WEB_LIBRARY_PATH."jquery/modules/toggler/style.css");
 		
 		$this->render('edituser',$params);
 	}
 
-	public function actionArchive(){
-		if(Yii::app()->user->isGuest) {
-			$this->loginRedirect();
-		}
-		if(!$this->authLevel(Yii::app()->user->name,2)){
-			Yii::app()->user->setFlash("error","You are not allowed to do that action with your permissions.");
-			$this->redirect(Yii::app()->createUrl('index'));
-			exit;
-		}
-		
-		$this->render("archive");
-	}
-
 	public function actionRunOnce()
 	{
-		if(Yii::app()->user->isGuest) {
-			$this->loginRedirect();
-		}
-		if(!$this->authLevel(Yii::app()->user->name,10)){
-			Yii::app()->user->setFlash("error","You are not allowed to do that action with your permissions.");
-			$this->redirect(Yii::app()->createUrl('index'));
-			exit;
-		}
-		
 		$this->render("runonce");
 	}
 
@@ -1011,6 +1247,7 @@ class SiteController extends Controller
 	
 	/** INTERNAL FUNCTIONS **/
 	
+    
 	private function loginRedirect()
 	{
 		$redirect = "http".((isset($_SERVER["HTTPS"]) and $_SERVER["HTTPS"]=="on")?"s":"")."://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
@@ -1018,33 +1255,5 @@ class SiteController extends Controller
 		$url = $login."?redirect=".urlencode($redirect);
 		$this->redirect($url);
 		exit;
-	}
-	
-	private function authLevel($username,$min_level=1)
-	{
-		$user = new UserObj($username);
-		if(!$user->loaded or $user->permission_level < $min_level) {
-			return false;
-		}
-		
-		return true;
-	}
-	
-	private function makeSSL()
-	{
-		if($_SERVER['SERVER_PORT'] != 443) {
-			header("HTTP/1.1 301 Moved Permanently");
-			header("Location: https://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
-			exit();
-		}
-	}
-
-	private function makeNonSSL()
-	{
-		if($_SERVER['SERVER_PORT'] == 443) {
-			header("HTTP/1.1 301 Moved Permanently");
-			header("Location: http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
-			exit();
-		}
 	}
 }

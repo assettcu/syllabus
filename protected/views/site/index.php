@@ -1,39 +1,14 @@
 <?php
+StdLib::Functions();
+
 $flashes = new Flashes;
 $flashes->render();
 
-$start = microtime(true);
-$manager = new Manager;
-$courses = $manager->load_unique_courses();
-
+$courses = load_unique_courses();
 ?>
-<style>
-div.browse-archive {
-    border-top:2px solid #ccc;
-    padding:10px;
-    margin: 15px 0px;
-}
-div.sub-header {
-    font-size:14px;
-}
-button.course-container {
-    min-width:150px;
-    min-height:85px;
-}
-div.course-years {
-    padding-top:5px;
-}
-table#browse-archive-table {
-    width:100%;
-    border-spacing: 15px;
-    border-collapse:separate;
-    margin: 0 auto;
-}
-table#browse-archive-table tr td {
-    text-align:center;
-    vertical-align:middle;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/bootstrap.css" />
+<script type="text/javascript" src="<?php echo WEB_LIBRARY_PATH; ?>jquery/modules/bootstrap/bootstrap.min.js"></script>
+
 <div class="ui-state-default ui-corner-all" style="padding:5px;margin-bottom:15px;font-size:14px;text-align:center;">
     Welcome to the Syllabus Archive! You may search the archive for past syllabi or browse it by selecting one of the department buttons below.
 </div>

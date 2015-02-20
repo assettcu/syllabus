@@ -7,12 +7,16 @@
  * @copyright 2011
  */
 
+Flashes::render();
+ 
 $box = new WidgetBox();
 $box->width = "500px";
 $box->header = "Login with CU Identikey";
 
 ob_start();
 ?>
+<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/bootstrap.css" />
+
 <style>
 #username,
 #password {

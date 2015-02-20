@@ -15,10 +15,9 @@ body {
 }
 
 #header {
-	background: url("../images/university_of_colorado_white.png") no-repeat scroll left top #FFFFFF;
+	background: url("../library/images/university_of_colorado_white.png") no-repeat scroll left top #FFFFFF;
 	color: #f0f0f0;
 	clear: both;
-	height:42px;
 	margin: 0;
 	padding-top: 110px;
 	position: relative;
@@ -38,14 +37,10 @@ body {
 	background-color: #fff;
 	color: #000;
 	font-size: 0.9em;
-	text-align: center;
+	text-align: right;
 	padding: 10px;
 	border-top: 1px solid #0e4b97;
 	margin: 0;
-}
-
-#footer-links {
-	padding-left: -100px;	
 }
 
 #assett-logo {
@@ -54,7 +49,7 @@ body {
 	left: 15px;
 	width: 153px;
 	height: 55px;
-	background-image: url("../images/small_assett_logo.png");
+	background-image: url("../library/images/small_assett_logo.png");
 	background-repeat: no-repeat;
 	margin-right: 10px;
 }
@@ -74,7 +69,7 @@ body {
 {
 	font-family:  Gill Sans MT, sans-serif;
 	font-variant: small-caps;
-	font-size: 200%;
+	font-size: 24px;
 	width:300px;
 	display:inline-block;
 	padding: 4px 20px 0px 70px;
@@ -100,7 +95,7 @@ body {
 }
 
 #mainmenu a:hover {
-	background-image:url(../images/bg-header-hover.png);
+	background-image:url(../library/images/bg-header-hover.png);
 	color:#000;
 }
 
@@ -300,4 +295,66 @@ div.subtitle {
 
 .image404 div.subtitle {
 	font-size:15px;
+}
+
+div.browse-archive {
+    border-top:2px solid #ccc;
+    padding:10px;
+    margin: 15px 0px;
+}
+div.sub-header {
+    font-size:14px;
+}
+button.course-container {
+    min-width:150px;
+    min-height:85px;
+}
+div.course-years {
+    padding-top:5px;
+}
+table#browse-archive-table {
+    width:100%;
+    border-spacing: 15px;
+    border-collapse:separate;
+    margin: 0 auto;
+}
+table#browse-archive-table tr td {
+    text-align:center;
+    vertical-align:middle;
+}
+
+
+/** Flash message styling **/
+div.flash {
+	padding:7px;
+	font-size: 13px;
+	margin-bottom:10px;
+	margin-top:5px;
+	padding-left:10px;
+}
+.message-icon {
+	float:left;
+	margin-top:1px;
+	margin-right:7px;
+}
+
+/** Static messages **/
+div.notice {
+	padding:10px;
+	font-size: 13px;
+	margin-bottom:15px;
+	margin-top:5px;
+	padding-left:10px;
+}
+
+/** Buttons need different spacing **/
+.ui-button-text {
+	padding:3px 5px;
+}
+
+.invisible {
+	visibility:hidden;
+}
+.visibile {
+	visibility:visible;
 }

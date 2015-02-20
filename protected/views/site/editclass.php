@@ -1,10 +1,12 @@
 <?php
+$COREUSER = new UserObj(Yii::app()->user->name);
+
 if(isset($_POST) and !empty($_POST)) {
 	$course = new CourseObj();
 	$course->prefix = $_POST["prefix"];
 	$course->num = $_POST["num"];
 	$course->load();
-	if(!Yii::app()->user->getState("_user")->has_permission($course)) {
+	if(!$COREUSER->has_permission($course)) {
 		Yii::app()->user->setFlash("error","You do not have permissions to add classes to this course.");
 		goto ENDOFSAVE;
 	}
@@ -440,7 +442,7 @@ jQuery(document).ready(function(){
 			preventDuplicates: true,
 			<?php if(!empty($class->instructors) and is_array($class->instructors)): ?>
 			prePopulate: [
-				<?php foreach($class->instructors as $instructor): ?>
+				<?php foreach($class->instructors as $instructor): if(!$instructor->loaded) continue; ?>
 				{id: <?=$instructor->instrid;?>, name: "<?=$instructor->name;?>"},
 				<?php endforeach; ?>
 			]

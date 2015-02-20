@@ -1,19 +1,27 @@
 <?php
+StdLib::Functions();
+Flashes::render();
 
-$course = new CourseObj();
-$course->prefix = $_GET["prefix"];
-$course->num = $_GET["num"];
-$course->load();
+$prefix = $_REQUEST["prefix"];
+$num = $_REQUEST["num"];
 
-$classes = $course->get_classes();
+$title = Yii::app()->db->createCommand()
+    ->select("title")
+    ->from("course_syllabi")
+    ->where("prefix = :prefix AND num = :num", array(":prefix"=>$prefix,":num"=>$num))
+    ->queryScalar();
 
-if(!$course->loaded) {
-    Yii::app()->user->setFlash("warning","Could not find course with prefix ".$_GET["prefix"]." and number ".$_GET["num"]);
-    $this->redirect(Yii::app()->homeUrl);
-    exit;
-}
+$classes = Yii::app()->db->createCommand()
+    ->select("id")
+    ->from("course_syllabi")
+    ->where("prefix = :prefix AND num = :num", array(":prefix"=>$prefix,":num"=>$num))
+    ->order("year DESC, (term = 'Fall') DESC, (term = 'Summer') DESC, (term = 'Spring') DESC")
+    ->queryAll();
 
+$COREUSER = (!Yii::app()->user->isGuest) ? new UserObj(Yii::app()->user->name) : new UserObj();
 ?>
+<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/bootstrap.css" />
+<script type="text/javascript" src="<?php echo WEB_LIBRARY_PATH; ?>jquery/modules/bootstrap/bootstrap.min.js"></script>
 <style>
 table {
     width:100%;
@@ -39,48 +47,60 @@ span.spacer {
     padding-left:5px;
     padding-right:5px;
 }
+table tr td a:not(.btn) {
+    text-decoration:none;
+}
 </style>
 
-<div class="breadcrumbs">
-    <a href="<?php echo Yii::app()->homeUrl; ?>">Home</a>  <span class="spacer">&gt;</span>
-    <a href="<?php echo Yii::app()->createUrl('course');?>?prefix=<?php echo $course->prefix; ?>">Explore Course Archive [<?php echo $course->prefix; ?>]</a> <span class="spacer">&gt;</span>
-    <a href="<?php echo Yii::app()->createUrl('course');?>?prefix=<?php echo $course->prefix; ?>&num=<?php echo $course->num; ?>"><?php echo $course->prefix." ".$course->num." ".$course->title; ?></a>
-</div>
+<ul class="breadcrumb">
+    <li><a href="<?php echo Yii::app()->homeUrl; ?>">Home</a></li>
+    <li><a href="<?php echo Yii::app()->createUrl('course');?>?prefix=<?php echo $prefix; ?>">Explore Course Archive [<?php echo $prefix; ?>]</a></li>
+    <li><a href="<?php echo Yii::app()->createUrl('course');?>?prefix=<?php echo $prefix; ?>&num=<?php echo $num; ?>"><?php echo $prefix." ".$num." ".$title; ?></a></li>
+</ul>
 
-<h1>[<?php echo $course->prefix." ".$course->num; ?>] <?php echo $course->title; ?></h1>
+<h3>[<?php echo $prefix." ".$num; ?>] <?php echo $title; ?></h3>
 
 <table>
     <thead>
         <tr>
             <th width="120px" class="calign">Term/Year</th>
             <th width="200px" class="calign">Instructors</th>
-            <th width="100px" class="calign">Section(s)</th>
+            <th width="100px" class="calign">Section</th>
             <th>Class Title</th>
-            <th width="100px" class="lalign">Page Link</th>
-            <th width="100px">Website</th>
-            <th width="100px" class="calign">Syllabus</th>
+            <th width="100px" class="calign">View</th>
+            <?php if($COREUSER->atleast_permission("manager")): ?>
+            <th class="calign">Edit</th>
+            <?php endif; ?>
         </tr>
     </thead>
     <tbody>
-        <?php $count=0; foreach($classes as $class): $count++; ?>
+        <?php 
+        $count=0; 
+        foreach($classes as $row): 
+            $count++; 
+            $class = new CourseSyllabusObj($row["id"]);
+            $class->find_syllabus_links();
+        ?>
         <tr <?php if($count%2==0): ?>class="odd"<?php endif; ?>>
             <td class="ralign"><?php echo $class->term." ".$class->year; ?></td>
             <td class="calign"><?php echo $class->print_instructors(); ?></td>
             <td class="calign"><?php echo $class->section; ?></td>
-            <td class="lalign"><?php echo ($class->subtitle=="")?$course->title:@$class->subtitle; ?></td>
-            <td><a href="<?php echo Yii::app()->createUrl('permalink');?>?cid=<?php echo $class->classid; ?>">Syllabus Page</a></td>
-            <td>
-                <?php if($class->website!=""): ?>
-                    (<a href="<?php echo $class->website; ?>">website</a>)
-                <?php endif; ?>
+            <td class="lalign"><?php echo ($class->special_topics_title == "") ? $title : $class->special_topics_title; ?></td>
+            <td class="calign">
+                <?php 
+                foreach($class->syllabus_links as $extension => $link):
+                    if(is_null($link)) continue;
+                ?>
+                <a href="<?php echo $link; ?>">
+                    <span class="icon icon-file"> </span> <?php echo $extension; ?>
+                </a>
+                <?php
+                endforeach;
+                ?>
             </td>
-            <td class="lalign">
-                <?php foreach($class->syllabi as $syllabus): ?>
-                    <a href="<?php echo Yii::app()->createUrl('_download'); ?>?sid=<?php echo $syllabus->syllabusid; ?>">
-                        <?php echo StdLib::load_image($syllabus->type,"16px","16px")." ".$syllabus->type; ?>
-                    </a>
-                <?php endforeach; ?>
-            </td>
+            <?php if($COREUSER->atleast_permission("manager")): ?>
+            <td class="calign"><a href="<?php echo Yii::app()->createUrl('edit'); ?>?id=<?php echo $class->id; ?>">edit</a></td>
+            <?php endif; ?>
         </tr>
         <?php endforeach; ?>
     </tbody>
