@@ -6,6 +6,9 @@ $flashes->render();
 
 $courses = load_unique_courses();
 ?>
+<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/bootstrap.css" />
+<script type="text/javascript" src="<?php echo WEB_LIBRARY_PATH; ?>jquery/modules/bootstrap/bootstrap.min.js"></script>
+
 <div class="ui-state-default ui-corner-all" style="padding:5px;margin-bottom:15px;font-size:14px;text-align:center;">
     Welcome to the Syllabus Archive! You may search the archive for past syllabi or browse it by selecting one of the department buttons below.
 </div>

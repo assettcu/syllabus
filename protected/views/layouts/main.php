@@ -66,7 +66,7 @@ $COREUSER = (!Yii::app()->user->isGuest) ? new UserObj(Yii::app()->user->name) :
 					<a href="<?=Yii::app()->createUrl('users')?>">Users</a>
 					<?php endif; ?>
 					<?php if($COREUSER->atleast_permission("manager")): ?>
-					<a href="<?=Yii::app()->createUrl('syllabus')?>">Add Syllabus</a>
+					<a href="<?=Yii::app()->createUrl('add')?>">Add Syllabus</a>
 					<?php endif; ?>
 				<?php endif; ?>
 				<a href="<?=Yii::app()->baseUrl;?>/">Home</a>

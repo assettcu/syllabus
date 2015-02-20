@@ -82,3 +82,22 @@ function load_unique_courses()
     
     return $return;
 }
+
+
+function make_unique_form_id($date="",$username="") {
+    if($date == "") {
+        $date = date("Y-m-d H:i:s");
+    }
+    if($username == "") {
+        $username = Yii::app()->user->name;
+    }
+    $salt = "heresalittlesalt";
+    return substr(md5($username.$salt.$date),3,10);
+}
+
+function is_valid_form_id($formid,$date,$username="") {
+    if($username == "") {
+        $username = Yii::app()->user->name;
+    }
+    return ($formid == make_unique_form_id($date,$username));
+}

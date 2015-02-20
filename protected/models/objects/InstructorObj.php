@@ -21,5 +21,16 @@ class InstructorObj extends FactoryObj
 			}
 		}
 	}
+    
+    public function pre_load()
+    {
+        if(!$this->is_valid_id() and isset($this->name)) {
+            $this->instrid = Yii::app()->db->createCommand()
+                ->select('instrid')
+                ->from('instructors')
+                ->where('name = :name',array(':name'=>$this->name))
+                ->queryScalar();
+        }
+    }
 
 }

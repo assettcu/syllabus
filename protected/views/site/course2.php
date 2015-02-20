@@ -1,5 +1,6 @@
 <?php
 StdLib::Functions();
+Flashes::render();
 
 $prefix = $_REQUEST["prefix"];
 $num = $_REQUEST["num"];
@@ -17,7 +18,10 @@ $classes = Yii::app()->db->createCommand()
     ->order("year DESC, (term = 'Fall') DESC, (term = 'Summer') DESC, (term = 'Spring') DESC")
     ->queryAll();
 
+$COREUSER = (!Yii::app()->user->isGuest) ? new UserObj(Yii::app()->user->name) : new UserObj();
 ?>
+<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/bootstrap.css" />
+<script type="text/javascript" src="<?php echo WEB_LIBRARY_PATH; ?>jquery/modules/bootstrap/bootstrap.min.js"></script>
 <style>
 table {
     width:100%;
@@ -43,24 +47,30 @@ span.spacer {
     padding-left:5px;
     padding-right:5px;
 }
+table tr td a:not(.btn) {
+    text-decoration:none;
+}
 </style>
 
-<div class="breadcrumbs">
-    <a href="<?php echo Yii::app()->homeUrl; ?>">Home</a>  <span class="spacer">&gt;</span>
-    <a href="<?php echo Yii::app()->createUrl('course');?>?prefix=<?php echo $prefix; ?>">Explore Course Archive [<?php echo $prefix; ?>]</a> <span class="spacer">&gt;</span>
-    <a href="<?php echo Yii::app()->createUrl('course');?>?prefix=<?php echo $prefix; ?>&num=<?php echo $num; ?>"><?php echo $prefix." ".$num." ".$title; ?></a>
-</div>
+<ul class="breadcrumb">
+    <li><a href="<?php echo Yii::app()->homeUrl; ?>">Home</a></li>
+    <li><a href="<?php echo Yii::app()->createUrl('course');?>?prefix=<?php echo $prefix; ?>">Explore Course Archive [<?php echo $prefix; ?>]</a></li>
+    <li><a href="<?php echo Yii::app()->createUrl('course');?>?prefix=<?php echo $prefix; ?>&num=<?php echo $num; ?>"><?php echo $prefix." ".$num." ".$title; ?></a></li>
+</ul>
 
-<h1>[<?php echo $prefix." ".$num; ?>] <?php echo $title; ?></h1>
+<h3>[<?php echo $prefix." ".$num; ?>] <?php echo $title; ?></h3>
 
 <table>
     <thead>
         <tr>
             <th width="120px" class="calign">Term/Year</th>
             <th width="200px" class="calign">Instructors</th>
-            <th width="100px" class="calign">Section(s)</th>
+            <th width="100px" class="calign">Section</th>
             <th>Class Title</th>
             <th width="100px" class="calign">View</th>
+            <?php if($COREUSER->atleast_permission("manager")): ?>
+            <th class="calign">Edit</th>
+            <?php endif; ?>
         </tr>
     </thead>
     <tbody>
@@ -88,6 +98,9 @@ span.spacer {
                 endforeach;
                 ?>
             </td>
+            <?php if($COREUSER->atleast_permission("manager")): ?>
+            <td class="calign"><a href="<?php echo Yii::app()->createUrl('edit'); ?>?id=<?php echo $class->id; ?>">edit</a></td>
+            <?php endif; ?>
         </tr>
         <?php endforeach; ?>
     </tbody>

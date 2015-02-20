@@ -8,21 +8,11 @@
  * 
  * @author      Ryan Carney-Mogan
  * @category    Core_Classes
- * @version     1.0.3
+ * @version     2.0.1
  * @copyright   Copyright (c) 2013 University of Colorado Boulder (http://colorado.edu)
  * 
  */
 class Flashes {
-    
-    public $buffer = "";
-    
-    /*
-     * Constructor sets up the local flashes variable
-     */
-    public function __construct() 
-    {
-        $this->flashes = Yii::app()->user->getFlashes();
-    }
     
     /**
      * Render
@@ -30,49 +20,35 @@ class Flashes {
      * Renders the HTML output for each of the flash messages.
      * 
      */
-    public function render() 
+    public static function render() 
     {
+        $buffer = "";
         ob_start();
-        $flashes = $this->flashes;
-        if(!empty($flashes)) {
-            foreach($flashes as $key=>$message) {
-                $icon = $this->get_icon($key);
-                switch($key) {
-                    case "success": echo '<div class="ui-state-highlight ui-corner-all flash">'.$icon.$message.'</div>'; break;
-                    case "error": echo '<div class="ui-state-error ui-corner-all flash">'.$icon.$message.'</div>'; break;
-                    default: echo '<div class="ui-state-highlight ui-corner-all flash">'.$icon.$message.'</div>'; break;
-                }
-                
+        $flashes = Yii::app()->user->getFlashes();
+        foreach($flashes as $key=>$message) {
+            switch($key) {
+                case "success":
+                    $buffer .= '<div class="alert dismissible alert-success"><button type="button" class="close" data-dismiss="alert">×</button><p><span class="icon icon-checkmark"> </span> '.$message.'</p></div>';
+                break;
+                case "error":
+                    $buffer .= '<div class="alert dismissible alert-danger"><button type="button" class="close" data-dismiss="alert">×</button><p><span class="icon icon-spam"> </span> '.$message.'</p></div>';
+                break;
+                case "warning":
+                    $buffer .= '<div class="alert dismissible alert-warning"><button type="button" class="close" data-dismiss="alert">×</button><p><span class="icon icon-warning"> </span> '.$message.'</p></div>';
+                break;
+                case "info":
+                default:
+                    $buffer .= '<div class="alert dismissible alert-info"><button type="button" class="close" data-dismiss="alert">×</button><p><span class="icon icon-info"> </span> '.$message.'</p></div>';
+                break;
             }
         }
-        $this->buffer .= ob_get_contents();
+        $buffer .= ob_get_contents();
         ob_end_clean();
         
-        echo $this->buffer;
+        echo $buffer;
     }
     
-    /**
-     * Get Icon
-     * 
-     * Returns the HTML for the icon that depends on the status of the message ("error","success","warning").
-     * 
-     * @param   (string)    $type   Type of message icon needed ("error","success","warning")
-     * @return  (string)
-     */
-    public function get_icon($type)
-    {
-        $icon = "<div class='message-icon'>";
-        switch($type) {
-            case "success":     $icon .= StdLib::load_image("check-64","16px","16px");          break;
-            case "error":       $icon .= StdLib::load_image("attention","16px","16px");         break;
-            default:            $icon .= StdLib::load_image("flag_mark_blue","16px","16px");    break;
-        }
-        if($icon!="") {
-            $icon .= "</div>";
-        }
-        
-        return $icon;
-    }
+    
     
     public static function create_flash($type,$messages="")
     {

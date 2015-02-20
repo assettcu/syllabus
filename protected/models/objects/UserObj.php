@@ -9,6 +9,13 @@ class UserObj extends FactoryObj
 	{
 		parent::__construct("username","users",$userid);
 	}
+    
+    public function pre_save()
+    {
+        if(!$this->is_valid_id() or !$this->exists()) {
+            $this->date_created = date("Y-m-d H:i:s");
+        }
+    }
 	
 	public function post_load()
 	{

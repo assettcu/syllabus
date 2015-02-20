@@ -43,7 +43,6 @@ class CourseSyllabusObj extends FactoryObj
             foreach($result as $row) {
                 $dbinstructors[$row["instrid"]] = $row["instrid"];
             }
-            
             # Loop through each instructor attached to this course
             foreach($this->instructors as $instrid) {
                 if(!in_array($instrid,$dbinstructors)) {
@@ -52,7 +51,6 @@ class CourseSyllabusObj extends FactoryObj
                 }
                 unset($dbinstructors[$instrid]);
             }
-            
             # Remove any instructors found that are not attached anymore
             if(!empty($dbinstructors)) {
                 foreach($dbinstructors as $instrid) {
@@ -65,6 +63,9 @@ class CourseSyllabusObj extends FactoryObj
     public function remove_course_instructor($courseid, $instrid) {
         if(empty($courseid) or empty($instrid)) {
             return false;
+        }
+        if(!$this->has_course_instructor($courseid,$instrid)) {
+            return true;
         }
         return Yii::app()->db->createCommand()
             ->delete("course_instructors",
@@ -80,6 +81,9 @@ class CourseSyllabusObj extends FactoryObj
         if(empty($courseid) or empty($instrid) or empty($fullname)) {
             return false;
         }
+        if($this->has_course_instructor($courseid,$instrid)) {
+            return true;
+        }
         return Yii::app()->db->createCommand()
             ->insert("course_instructors",
                 array(
@@ -88,6 +92,14 @@ class CourseSyllabusObj extends FactoryObj
                     "fullname"  => $fullname
                 )
             );
+    }
+    
+    public function has_course_instructor($courseid,$instrid) {
+        return (Yii::app()->db->createCommand()
+            ->select("COUNT(*)")
+            ->from("course_instructors")
+            ->where("courseid = :courseid AND instrid = :instrid",array(":courseid"=>$courseid,":instrid"=>$instrid))
+            ->queryScalar() == 1);
     }
     
     public function generate_id() {
@@ -132,7 +144,7 @@ class CourseSyllabusObj extends FactoryObj
         }
     }
     
-    protected function run_once() {
+    public function run_check() {
         $required = array(
             "prefix",
             "num",
@@ -228,11 +240,54 @@ class CourseSyllabusObj extends FactoryObj
             ->queryAll();
     }
     
+    public function get_instrids() {
+        return Yii::app()->db->createCommand()
+            ->select("instrid")
+            ->from("course_instructors")
+            ->where("courseid = :courseid",array("courseid"=>$this->id))
+            ->queryAll();
+    }
+    
+    public function editable_instructors() {
+        $instructors = $this->get_instructors();
+        $instructors_array = array();
+        foreach($instructors as $row) {
+            $instructors_array[] = $row["fullname"];
+        }
+        
+        return implode("\n",$instructors_array);
+    }
+    
     public function find_syllabus_links()
     {
         foreach($this->syllabus_links as $extension => $file) {
             if(is_file(LOCAL_ARCHIVE.$this->id.".".$extension)) {
                 $this->syllabus_links[$extension] = WEB_ARCHIVE.$this->id.".".$extension;
+            }
+        }
+    }
+    
+    public function has_syllabus_file()
+    {
+        # Double check we called this function
+        $this->find_syllabus_links();
+        if(is_null($this->syllabus_links)) {
+            return false;
+        }
+        foreach($this->syllabus_links as $extension => $link) {
+            if(!is_null($link)) {
+                return true;
+            }
+        }
+        return false;
+        
+    }
+    
+    public function pre_delete() {
+        $this->find_syllabus_links();
+        foreach($this->syllabus_links as $ext => $link) {
+            if(is_file(LOCAL_ARCHIVE.$this->id.".".$ext)) {
+                unlink(LOCAL_ARCHIVE.$this->id.".".$ext);
             }
         }
     }
