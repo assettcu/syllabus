@@ -24,11 +24,7 @@
     Boulder, CO 80309<br/>
     Main Office Phone: (303) 735-3813<br/>
     <br/>
-    <span style="line-height: 2.5em;">The Syllabus Archive was developed by:</span><br/>
-    <a href="http://dirwww.colorado.edu/whitepages/ldapdrill.xml?cnfull=100222907">Ryan Carney-Mogan</a><br/>
-    ASSETT Application Developer<br/>
-    Work Phone: (303) 735-4595<br/>
-    Ryan.Carney-Mogan@colorado.edu<br/>
+    <span style="line-height: 2.5em;">The Syllabus Archive was developed by the <a href="https://assett.colorado.edu/about-us/support/" target="_blank">ASSETT Application Development team</a>.</span>
     <br/>
   </div>
   
