@@ -131,21 +131,27 @@ if(!empty($classes)) {
 		<tr>
 			<td>
 			    <a href="<?php echo Yii::app()->createUrl('course'); ?>?prefix=<?php echo $class->prefix; ?>&num=<?php echo $class->num; ?>">
-			        <?php echo "[".$class->prefix." ".$class->num."] ".$class->title; ?>
+			        <?php echo $class->prefix." ".$class->num." - ".$class->title; ?>
 			    </a>
 			</td>
 			<td class="calign"><?=$class->section;?></td>
 			<td class=""><?=$class->year." ".$class->term;?></td>
 			<td><?=$class->print_instructors();?></td>
-			<td class="calign">
+			<td>
 			    <?php 
 			    $class->find_syllabus_links();
-			    foreach($class->syllabus_links as $ext => $link) {
-			        if(is_null($link)) {
-			            continue;
-			        }
-                    echo "<a href='".$link."'> <span class='icon icon-".$ext."'> </span> ".$ext."</a> ";
-                }
+                foreach($class->syllabus_links as $extension => $link):
+                    if(is_null($link)) continue;
+                ?>
+                <a class="doc-link" href="<?php echo $link; ?>">
+                    <?php if($extension === "docx" || $extension === "doc"): ?>
+                        <i class="fa fa-file-word-o"></i>
+                    <?php elseif ($extension === "pdf"): ?>
+                        <i class="fa fa-file-pdf-o"></i>
+                    <?php endif; ?><?php echo $extension; ?>
+                </a>
+                <?php
+                endforeach;
                 ?>
 			</td>
 		</tr>
@@ -170,24 +176,17 @@ if(Yii::app()->user->isGuest) {
 }
 
 ?>
-<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/bootstrap.css" />
-<script type="text/javascript" src="<?php echo WEB_LIBRARY_PATH; ?>jquery/modules/bootstrap/bootstrap.min.js"></script>
 
-<div style="float:right;width:500px;text-align:right;">
-	<form action="<?=Yii::app()->createUrl('search');?>" method="get">
-		<input type="text" name="s" style="width:400px;" value="<?=@$search;?>" /> <button>Search</button>
-	</form>
-</div>
-<h1 style="margin-bottom:10px;padding-top:10px;">Search Results for <span style="color:#09f;">"<?=$search;?>"</span></h1>
-<div class="hint">Search yields <?=$count;?> results<?=(count($result) > @$limiter)?" but only showing top ".@$limiter." results":"";?>.</div>
+<h2 style="margin-bottom:10px;padding-top:10px;">Search Results for <span style="color:#09f;">"<?=$search;?>"</span></h2>
+<div class="text-primary pull-right">Search yields <?=count($result);?> results<?=(count($result) > @$limiter)?" but only showing top ".@$limiter." results":"";?>.</div>
 <table class="table table-striped table-hover" style="width:100%;">
 	<thead>
-		<tr>
-			<th class="calign" id="prefix">Course</th>
-			<th class="calign " id="section" width="70px">Section</th>
-			<th class="calign " id="term" width="110px">Term</th>
-			<th class="calign " id="instructor" width="250px">Instructor</th>
-			<th class="calign " width="70px">Action</th>
+		<tr class="active">
+			<th id="prefix">Course</th>
+			<th class="calign" id="section" width="120px">Section</th>
+			<th id="term" width="140px">Term</th>
+			<th id="instructor" width="250px">Instructor</th>
+			<th width="70px">Action</th>
 		</tr>
 	</thead>
 	<?=$results_table;?>

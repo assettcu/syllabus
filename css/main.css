@@ -1,17 +1,11 @@
-body {
-	margin: 0;
-	padding: 0;
-	color: #555;
-	font: normal 10pt;
-	font-family: Verdana, Geneva, sans-serif;
-	background: #dfdfdf;
+* {
+	text-rendering: optimizeLegibility;
 }
 
 #page {
-	margin-bottom: 5px;
 	background: white;
-	border: 1px solid #0e4b97;
-	border-top:none;
+	/*border: 1px solid #0e4b97;*/
+	/*border-top:none;*/
 }
 
 #header {
@@ -25,7 +19,8 @@ body {
 }
 
 #content {
-    padding: 20px;
+	padding-top: 20px;
+    /*padding: 20px;*/
 }
 
 #sidebar {
@@ -36,17 +31,18 @@ body {
 	position: relative;
 	background-color: #fff;
 	color: #000;
-	font-size: 0.9em;
+	font-size: 1.4rem;
 	text-align: right;
-	padding: 10px;
-	border-top: 1px solid #0e4b97;
+	padding: 2rem 0 3rem;
+	/*border-top: 1px solid #0e4b97;*/
 	margin: 0;
 }
 
 #assett-logo {
-	position: absolute;
+	/*position: absolute;
 	top: 15px;
-	left: 15px;
+	left: 15px;*/
+	float: left;
 	width: 153px;
 	height: 55px;
 	background-image: url("../library/images/small_assett_logo.png");
@@ -65,23 +61,12 @@ body {
 	height:42px;
 }
 
-#logo-text
-{
-	font-family:  Gill Sans MT, sans-serif;
-	font-variant: small-caps;
-	font-size: 24px;
-	width:300px;
-	display:inline-block;
-	padding: 4px 20px 0px 70px;
-}
-
 #mainmenu {
 	float:right;
 	display:block;
 }
 
 #mainmenu a {
-	font-size:13px;
 	display:block;
 	float:right;
 	line-height:42px;
@@ -166,7 +151,6 @@ div.search-form {
 }
 
 .portlet-title {
-	font-size: 12px;
 	font-weight: bold;
 	padding: 0;
 	margin: 0;
@@ -174,7 +158,6 @@ div.search-form {
 }
 
 .portlet-content {
-	font-size:0.9em;
 	margin: 0 0 15px 0;
 	padding: 5px 8px;
 	background:#EFFDFF;
@@ -240,7 +223,6 @@ div.input-container {
 
 div.input-container input {
 	margin-top:5px;
-	font-size:12px;
 	padding:3px;
 	letter-spacing:2px;
 }
@@ -250,26 +232,11 @@ div.subtitle {
 }
 
 div.smallcaps {
-	font-size:11px;
 	font-variant:small-caps;
 }
 
-h1 {
-	text-align:left;
-	padding-bottom:5px;
-	border-bottom:1px solid #000;
-	font-size:16px;
-	font-weight:bold;
-	letter-spacing:1px;
-	margin-bottom:10px;
-	margin-top:5px;
-}
-
 h2 {
-	margin-bottom:10px;
-	text-align:center;
-	padding-bottom:5px;
-	border-bottom:1px solid #003;
+	color: #2C3E50;
 }
 
 div.subtitle {
@@ -298,12 +265,12 @@ div.subtitle {
 }
 
 div.browse-archive {
-    border-top:2px solid #ccc;
-    padding:10px;
-    margin: 15px 0px;
+    /*padding:10px;*/
+    /*margin: 15px 0px;*/
+    padding-top: 30px;
 }
 div.sub-header {
-    font-size:14px;
+    font-size:1.4rem;
 }
 button.course-container {
     min-width:150px;
@@ -327,7 +294,7 @@ table#browse-archive-table tr td {
 /** Flash message styling **/
 div.flash {
 	padding:7px;
-	font-size: 13px;
+	font-size: 1.3rem;
 	margin-bottom:10px;
 	margin-top:5px;
 	padding-left:10px;
@@ -341,7 +308,7 @@ div.flash {
 /** Static messages **/
 div.notice {
 	padding:10px;
-	font-size: 13px;
+	font-size: 1.3rem;
 	margin-bottom:15px;
 	margin-top:5px;
 	padding-left:10px;
@@ -357,4 +324,71 @@ div.notice {
 }
 .visibile {
 	visibility:visible;
+}
+
+.center {
+	text-align: center;
+}
+
+#navbar {
+	z-index: 10;
+}
+
+.list-group-item-heading {
+	font-weight: 700;
+	color: #2c3e50;
+}
+
+.list-group-item-text {
+	font-size: 1.2rem;
+}
+
+a.list-group-item {
+	color: #2c3e50;
+	transition: background-color 100ms;
+}
+
+.navbar-brand {
+	padding: 12px 15px;
+}
+
+.panel {
+	border-radius: 5px;
+}
+
+.flat-top {
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+}
+
+.top-bottom-padding-3 {
+	padding: 3rem 0rem;
+}
+
+th {
+	font-weight: bold;
+}
+
+.department-details {
+	font-size: 0.7rem;
+	font-weight: 400;
+	text-align: right;
+}
+
+#welcome-text-well {
+	margin: 0 0;
+	text-align: center;
+}
+
+.list-group-item-heading {
+	margin-bottom: 0;
+}
+
+.table {
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.courses-header {
+	margin: 4rem 0 2rem;
 }
