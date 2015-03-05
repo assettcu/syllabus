@@ -19,8 +19,6 @@ $COREUSER = (!Yii::app()->user->isGuest) ? new UserObj(Yii::app()->user->name) :
     <script src="//ajax.googleapis.com/ajax/libs/jquery/<?php echo Yii::app()->params["JQUERY_VERSION"]; ?>/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/<?php echo Yii::app()->params["JQUERYUI_VERSION"]; ?>/jquery-ui.min.js"></script>
 
-    <!-- <link rel="stylesheet" href="<?php echo WEB_LIBRARY_PATH; ?>/jquery/themes/<?php echo $theme; ?>/jquery-ui.css" type="text/css" /> -->
-
     <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/bootstrap.min.css" />
     <script type="text/javascript" src="<?php echo WEB_LIBRARY_PATH; ?>jquery/modules/bootstrap/bootstrap.min.js"></script>
     <script type="text/javascript" src="<?php echo WEB_LIBRARY_PATH; ?>jquery/modules/sticky/jquery.sticky.js"></script>
