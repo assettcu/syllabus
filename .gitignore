@@ -1,11 +1,12 @@
 assets/*
+archive/*.*
 !assets/.gitignore
 protected/runtime/*
 !protected/runtime/.gitignore
 protected/data/*.db
-themes/classic/views/
 protected/config/main-ext.php
-archive/*.*
+protected/views/site/runonce.php
+themes/classic/views/
 *.db
 .gitignore
 .project

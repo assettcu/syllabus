@@ -1,48 +1,23 @@
 <?php
+/**
+ * Run Once
+ * 
+ * The purpose of the "run once" is to run PHP functions to alter and modify
+ * the archive in conjunction with the system itself. This means it loads up
+ * functions and users and objects just as the system would and run functionality
+ * against them.
+ * 
+ * For example, say we modify the namespace for syllabi. We would create functions in
+ * Run Once to change the names for all the syllabi.
+ * 
+ * Only PROGRAMMERS are allowed here. Restricted in the SiteController using StdLib::is_programmer.
+ * Will be ignored by the GitHub repository.
+ */
 StdLib::pre();
-
-ini_set("display_errors",1);
-error_reporting(E_ALL);
+StdLib::set_debug_state("DEVELOPMENT");
 
 set_time_limit(0);
 
-$NUM_TO_PROCESS = 3;
-$NUM_COPIED = 0;
-$dir = "C:\\archive\\Syllabus Archive\\";
-
-$results = Yii::app()->db->createCommand()
-    ->select("id")
-    ->from("course_syllabi")
-    ->where("has_file = 2")
-    ->limit($NUM_TO_PROCESS)
-    ->queryAll();
-
-StdLib::vdump($results);
-
-foreach($results as $row) {
-    $filepath = $dir.$row["id"].".pdf";
-    if(is_file($filepath)) {
-        $source = $filepath;
-        $destination = "C:\\web\\OCR\\scanin\\~SyllabusArchive\\".$row["id"].".pdf";
-        if(is_file($destination)) {
-            continue;
-        }
-        if(copy($source, $destination)) {
-            $course = new CourseSyllabusObj($row["id"]);
-            $course->has_file = 3;
-            $course->save();
-            $NUM_COPIED++;
-        }
-    }
-}
-
-$starttime = time();
-$scanout = "C:\\web\\OCR\\scanout\\~SyllabusArchive\\";
-do {
-    $numfiles = count(scandir($scanout));
-    sleep(1);
-    var_dump($numfiles);
-} while($numfiles < $NUM_COPIED+2 or (($starttime - time()) > 180));
+return false;
 
 ?>
-Done.

@@ -2,8 +2,6 @@
 StdLib::Functions();
 Flashes::render();
 ?>
-<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/bootstrap.css" />
-<script type="text/javascript" src="<?php echo WEB_LIBRARY_PATH; ?>jquery/modules/bootstrap/bootstrap.min.js"></script>
 
 <div class="well" style="background-color:inherit;">
     <form class="form-horizontal" id="edit-syllabus-form" method="post" enctype="multipart/form-data">
