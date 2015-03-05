@@ -27,14 +27,6 @@ class UserIdentity extends CUserIdentity
         }
         
 		if($this->errorCode!=0) {
-			$syslog = new SyslogObj();
-			$syslog->username = $this->username;
-			$syslog->ipaddress = $_SERVER['REMOTE_ADDR'];
-			$syslog->action = "login attempt unsuccessful";
-			$syslog->notes = "Error number: ".$this->errorCode;
-			if(!$syslog->save()) {
-				var_dump($syslog->get_error()); die();
-			}
 			if($this->errorCode!=4){
 				$user->iterate_attempts();
 			}
