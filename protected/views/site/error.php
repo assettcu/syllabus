@@ -1,6 +1,4 @@
-<?php
-$this->pageTitle=Yii::app()->name . ' - 404 Error';
-?>
+<?php $this->pageTitle = Yii::app()->name . ' - 404 Error'; ?>
 
 <div class="image404">
   You're looking in Alderaan places.
