@@ -1,28 +1,29 @@
-<?php if(!Yii::app()->user->isGuest) Yii::app()->user->logout(); ?>
-<h1>Syllabus Archive is down for Maintenance!</h1>
-<link rel="stylesheet" type="text/css" href="//assettdev.colorado.edu/libraries/javascript/jquery/modules/countdown/jquery.countdown.css" />
-<script src="//assettdev.colorado.edu/libraries/javascript/jquery/modules/countdown/jquery.countdown.js" ></script>
+<?php 
+# Force logout (unless programmer)
+if(!Yii::app()->user->isGuest and !StdLib::is_programmer()) Yii::app()->user->logout(); 
+?>
+<link rel="stylesheet" type="text/css" href="<?php echo WEB_LIBRARY_PATH; ?>/jquery/modules/countdown/jquery.countdown.css" />
+<script src="<?php echo WEB_LIBRARY_PATH; ?>/jquery/modules/countdown/jquery.plugin.js" ></script>
+<script src="<?php echo WEB_LIBRARY_PATH; ?>/jquery/modules/countdown/jquery.countdown.js" ></script>
 <script language="JavaScript">
-$(function () {
-	var austDay = new Date("<?=date("Y-m-d")." 17:00:00";?>");
-	$('#defaultCountdown').countdown({until: austDay, onTick: highlightLast, format: 'YOWDHMS'});
+jQuery(document).ready(function($){
+	var austDay = new Date("<?php echo date("Y-m-d")." 17:00:00";?>");
+	$('#defaultCountdown').countdown({until: austDay, format: 'YOWDHMS'});
 });
-function highlightLast(periods)
-{
-  if($.countdown.periodsToSeconds(periods)<=60) {
-    $(this).addClass('highlight');
-  }
-}
 </script>
 
 <style>
 #defaultCountdown {
-  width:330px;
-  height:45px;
-}
-.highlight {
-  color:#f00;
+  width:350px;
+  height:65px;
 }
 </style>
 
-<p>We will most likely be back up in: <div id="defaultCountdown"></span>.</p>
+<h1 class="calign">Syllabus Archive is down for Maintenance!</h1>
+
+<p class="calign">
+    We will most likely be back up in: 
+    <center>
+        <div id="defaultCountdown"></div>
+    </center>
+</p>
