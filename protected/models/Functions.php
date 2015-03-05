@@ -25,13 +25,26 @@ function load_courses($prefix)
     return $courses;
 }
 
+function load_departments() 
+{
+    $result = Yii::app()->db->createCommand()
+        ->selectDistinct("id, label")
+        ->from("departments")
+        ->order("id")
+        ->queryAll();
+
+    return $result;
+}
+
 function load_unique_courses()
 {
+    $time_start = microtime(true);
     $result = Yii::app()->db->createCommand()
         ->selectDistinct("prefix")
         ->from("course_syllabi")
         ->order("prefix")
-        ->queryAll();
+        ->queryAll(); 
+
     
     $return = array();
     foreach($result as $row) {
@@ -39,14 +52,12 @@ function load_unique_courses()
         $prefix = $row["prefix"];
         # Init array position for Course
         $return[$prefix] = array();
-        
-        # Load the number of classes per course
-        $return[$prefix]["numclasses"] = count(Yii::app()->db->createCommand()
-            ->select('COUNT(*)')
-            ->from("course_syllabi")
-            ->where("prefix = :prefix",array(":prefix"=>$prefix))
-            ->group("prefix")
-            ->queryScalar());
+        $return[$prefix]["department"] = Yii::app()->db->createCommand()
+            ->selectDistinct("label")
+            ->from("departments")
+            ->where("id = :prefix", array(":prefix"=>$prefix))
+            ->order("id")
+            ->queryScalar();
             
         # Load the number of syllabi per course
         $return[$prefix]["numsyllabi"] = Yii::app()->db->createCommand()
@@ -54,7 +65,7 @@ function load_unique_courses()
             ->from("course_syllabi")
             ->where("prefix = :prefix",array(":prefix"=>$prefix))
             ->queryScalar();
-        
+
         # Load the number of instructors per course
         $return[$prefix]["numinstructors"] = count(Yii::app()->db->createCommand()
             ->select("COUNT(*)")
@@ -62,22 +73,6 @@ function load_unique_courses()
             ->where("course_syllabi.prefix = :prefix AND course_instructors.courseid = course_syllabi.id",array(":prefix"=>$prefix))
             ->group("instrid")
             ->queryAll());
-        
-        # Load the earliest year
-        $return[$prefix]["minyear"] = Yii::app()->db->createCommand()
-            ->select("year")
-            ->from("course_syllabi")
-            ->where("prefix = :prefix", array(":prefix"=>$prefix))
-            ->order("year ASC")
-            ->queryScalar();
-        
-        # Load the latest year
-        $return[$prefix]["maxyear"] = Yii::app()->db->createCommand()
-            ->select("year")
-            ->from("course_syllabi")
-            ->where("prefix = :prefix", array(":prefix"=>$prefix))
-            ->order("year DESC")
-            ->queryScalar();
     }
     
     return $return;
