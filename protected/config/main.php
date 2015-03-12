@@ -50,7 +50,7 @@ $mainconfig = array(
 	// application-level parameters that can be accessed
 	// using Yii::app()->params['paramName']
 	'params'=>array(
-        'JQUERY_VERSION'      => '2.1.1',
+        'JQUERY_VERSION'      => '2.1.3',
         'JQUERYUI_VERSION'    => '1.11.0'
 	),
 );
