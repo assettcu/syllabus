@@ -43,9 +43,8 @@ $COREUSER = (!Yii::app()->user->isGuest) ? new UserObj(Yii::app()->user->name) :
         $('#navbar').on('sticky-start', function() { $(this).addClass("flat-top"); });
         $('#navbar').on('sticky-end', function() { $(this).removeClass("flat-top"); });
         
-        // This actually breaks any javascript on Firefox
-        // Error message is a[href$='/syllabus/' is not a valid syntax.
-        // $('a[href$="' + window.location.pathname + '"').parent().addClass("active");
+        // Mark button for current page as 'active'
+        $('a[href$="' + window.location.pathname + '"]').parent().addClass("active");
     });
     </script>
 
