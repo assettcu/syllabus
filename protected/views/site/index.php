@@ -74,6 +74,14 @@ jQuery(document).ready(function($){
         $("#departmentsListGroup a").removeClass("active");
         $(element).addClass("active");
         var prefix = $(element).children(".list-group-item-heading").attr("data-prefix");
+
+        // If the window is scrolled down past the top of the courses list, scroll to top of courses element
+        if($(window).scrollTop() > ($(".browse-archive").offset().top - 50)) {
+            $('html, body').animate({
+                scrollTop: $(".browse-archive").offset().top - 50
+            }, 300);
+        }
+
         $.getJSON("ajax/LoadCourses", { prefix: prefix}, function(data) {
             $('#coursesListGroup').html("");
             $('#courses-help-text').hide();
