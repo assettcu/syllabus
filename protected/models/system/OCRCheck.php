@@ -3,14 +3,18 @@
 DEFINE("TIMEOUT", 15 * 60);    // Number of seconds to run before timing out and exiting
 DEFINE("CHECK_FREQ", 60);      // Number of seconds to wait between each 
 
-// Define OCR api location based on whether we're on the production or the development server
-$ocr_api = ($_SERVER["SERVER_NAME"] == "assettdev.colorado.edu" or $_SERVER["SERVER_NAME"] == "assetttest.colorado.edu") ? "http://assettdev.colorado.edu/ocr/api/" : "http://compass.colorado.edu/ocr/api/";
+// Development and Production OCR Servers
+DEFINE("DEV_OCR", "http://assettdev.colorado.edu/ocr/api/");
+DEFINE("PROD_OCR", "http://compass.colorado.edu/ocr/api/");
 
 // If the file_id is not provided, throw exception
-if(!isset($argv[1], $argv[2])) {
+if(!isset($argv[1], $argv[2], $argv[3])) {
     writeToLog("OCRCheck started with invalid or missing arguments.");
-    throw new InvalidArgumentException("Incorrect usage. Usage: php OCRCheck.php destination_dir file_id");
+    throw new InvalidArgumentException("Incorrect usage. Usage: php OCRCheck.php destination_dir file_id server_name");
 }
+
+// Define OCR api location based on whether we're on the production or the development server
+$ocr_api = ($argv[3] == "assettdev.colorado.edu" or $argv[3] == "assetttest.colorado.edu") ? DEV_OCR : PROD_OCR;
 
 $destination_dir = $argv[1];
 $file_id = $argv[2];

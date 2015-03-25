@@ -21,6 +21,8 @@ defined('WEB_LIBRARY_PATH') or define('WEB_LIBRARY_PATH','//'.WEB_ROOT.'/library
 defined('WEB_IMAGE_LIBRARY') or define('WEB_IMAGE_LIBRARY',WEB_LIBRARY_PATH."images/");
 defined('WEB_ARCHIVE') or define('WEB_ARCHIVE','//'.WEB_ROOT.'/archive/');
 
+defined('OCR_API') or define('OCR_API', '/ocr/api/');
+
 require_once($yii);
 Yii::createWebApplication($config)->run();
 
