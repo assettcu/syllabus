@@ -57,8 +57,6 @@ class SiteController extends BaseController
 	}
 
 	/** NORMAL PAGES **/
-	
-    
     public function actionAdd() {
         $this->noGuest();
         
@@ -139,7 +137,29 @@ class SiteController extends BaseController
                         }
                         
                         # Move file to permanent home in the archive
-                        copy($file_location, ROOT."/archive/".$CS->id.".".$fileparts["extension"]);
+                        $fileName = $CS->id.".".$fileparts["extension"];
+                        copy($file_location, ROOT."/archive/".$fileName);
+
+                        # If the user selected OCR, then copy the file to the OCR directory
+                        if($_POST["ocr"] == "yes" && $fileparts["extension"] == "pdf") {
+                            // Define OCR api location based on whether we're on the production or the development server
+                            $ocr_api = ($_SERVER["SERVER_NAME"] == "assettdev.colorado.edu" or $_SERVER["SERVER_NAME"] == "assetttest.colorado.edu") ? "http://assettdev.colorado.edu" : "http://compass.colorado.edu";
+                            $url = $ocr_api.OCR_API.'uploadfile';
+                            $data = array('file_dir' => ROOT."/archive/", 'file_name' => $fileName);
+                            $options = array(
+                                    'http' => array(
+                                    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                                    'method'  => 'POST',
+                                    'content' => http_build_query($data),
+                                )
+                            );
+
+                            $context  = stream_context_create($options);
+                            $result = json_decode(file_get_contents($url, false, $context));
+                            if(isset($result->id)) {
+                                pclose(popen("start php ".ROOT."/protected/models/system/OCRCheck.php ".ROOT."/archive/ ".$result->id." ".$_SERVER["SERVER_NAME"], 'w'));
+                            }
+                        }
                         
                         # Made it to here? We must have saved at least one course syllabus!
                         $saved_at_least_one = TRUE;
@@ -281,7 +301,27 @@ class SiteController extends BaseController
                         # If the user added a file, let's continue with upload
                         if($file["size"] != 0) {
                             # Move file to permanent home in the archive
-                            copy($file_location, ROOT."/archive/".$CS->id.".".$fileparts["extension"]);
+                            $fileName = $CS->id.".".$fileparts["extension"];
+                            copy($file_location, ROOT."/archive/".$fileName);
+
+                            # If the user selected OCR, then copy the file to the OCR directory
+                            if($_POST["ocr"] == "yes" && $fileparts["extension"] == "pdf") {
+                                $url = OCR_API.'uploadfile';
+                                $data = array('file_dir' => ROOT."/archive/", 'file_name' => $fileName);
+                                $options = array(
+                                        'http' => array(
+                                        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+                                        'method'  => 'POST',
+                                        'content' => http_build_query($data),
+                                    )
+                                );
+
+                                $context  = stream_context_create($options);
+                                $result = json_decode(file_get_contents($url, false, $context));
+                                if(isset($result->id)) {
+                                    pclose(popen("start php ".ROOT."/protected/models/system/OCRCheck.php ".ROOT."/archive/ ".$result->id, 'w'));
+                                }
+                            }
                         }
                         
                         # Made it to here? We must have saved at least one course syllabus!

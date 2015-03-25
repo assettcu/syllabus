@@ -42,8 +42,9 @@ $COREUSER = (!Yii::app()->user->isGuest) ? new UserObj(Yii::app()->user->name) :
         $("#navbar").sticky({topSpacing:0});
         $('#navbar').on('sticky-start', function() { $(this).addClass("flat-top"); });
         $('#navbar').on('sticky-end', function() { $(this).removeClass("flat-top"); });
-
-        $('a[href$="' + window.location.pathname + '"').parent().addClass("active");
+        
+        // Mark button for current page as 'active'
+        $('a[href$="' + window.location.pathname + '"]').parent().addClass("active");
     });
     </script>
 

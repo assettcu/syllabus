@@ -111,20 +111,20 @@ Flashes::render();
             </div>
             <div class="help-block error-block text-danger" style="display:none;"></div>
         </div>
-        <div class="form-group" id="form-group-5">
+        <div class="form-group" id="form-group-9">
           <label for="inputPrefix" class="col-lg-2 control-label">Run TextOverlay on Syllabus</label>
           <div class="col-lg-10">
               <div class="radio">
                   <label>
-                      <input type="radio" name="ocr" id="ocr-yes" value="yes" disabled  <?php if(!isset($_POST["ocr"]) or $_POST["ocr"] == "no") { echo "checked"; } ?>> Yes
+                      <input type="radio" name="ocr" id="ocr-yes" value="yes" <?php if(!isset($_POST["ocr"]) or $_POST["ocr"] == "no") { echo "checked"; } ?>> Yes
                   </label>
               </div>
               <div class="radio">
                   <label>
-                      <input type="radio" name="ocr" id="ocr-no" value="no" disabled <?php if(@$_POST["restriction"] == "yes") { echo "checked"; } ?> checked> No
+                      <input type="radio" name="ocr" id="ocr-no" value="no" <?php if(@$_POST["restriction"] == "yes") { echo "checked"; } ?> checked> No
                   </label>
               </div>
-              <div class="help-block error-block"><i>*Not available yet*</i> Running TextOverlay on the syllabus will make it text searchable and more accessible for screen readers.</div>
+              <div class="help-block error-block">Running TextOverlay on the syllabus will make it text searchable and more accessible for screen readers.</div>
           </div>
         </div>
         <div class="form-group" id="form-group-8">
@@ -200,8 +200,8 @@ jQuery(document).ready(function($){
     
     $(document).on("blur","#form-group-1 input",function(){
         var patterns = {
-            "prefix" : /[A-Z]{4}/,
-            "num"    : /[0-9]{4}/,
+            "prefix"    : /[A-Z]{4}/,
+            "num"       : /[0-9]{4}/,
         };
         var local_errors = false;
         var error_message = "";
@@ -222,7 +222,7 @@ jQuery(document).ready(function($){
     
     $(document).on("blur","#form-group-2 input",function(){
         var patterns = {
-            "section" : /([0-9]{3},?)+/,
+            "section"   : /^([0-9]{3}(,[0-9]{3})*)+$/
         };
         var local_errors = false;
         var error_message = "";

@@ -1,8 +1,4 @@
 <?php
-
-ini_set("display_errors",1);
-error_reporting(E_ALL);
-
 // change the following paths if necessary
 $yii=dirname(__FILE__).'/../yii/framework/yii.php';
 $config=dirname(__FILE__).'/protected/config/main.php';
@@ -24,6 +20,8 @@ defined('LOCAL_ARCHIVE') or define('LOCAL_ARCHIVE',ROOT."\\archive\\");
 defined('WEB_LIBRARY_PATH') or define('WEB_LIBRARY_PATH','//'.WEB_ROOT.'/library/');
 defined('WEB_IMAGE_LIBRARY') or define('WEB_IMAGE_LIBRARY',WEB_LIBRARY_PATH."images/");
 defined('WEB_ARCHIVE') or define('WEB_ARCHIVE','//'.WEB_ROOT.'/archive/');
+
+defined('OCR_API') or define('OCR_API', '/ocr/api/');
 
 require_once($yii);
 Yii::createWebApplication($config)->run();
