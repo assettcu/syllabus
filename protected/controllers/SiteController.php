@@ -306,7 +306,9 @@ class SiteController extends BaseController
 
                             # If the user selected OCR, then copy the file to the OCR directory
                             if($_POST["ocr"] == "yes" && $fileparts["extension"] == "pdf") {
-                                $url = OCR_API.'uploadfile';
+                                // Define OCR api location based on whether we're on the production or the development server
+                                $ocr_api = ($_SERVER["SERVER_NAME"] == "assettdev.colorado.edu" or $_SERVER["SERVER_NAME"] == "assetttest.colorado.edu") ? "http://assettdev.colorado.edu" : "http://compass.colorado.edu";
+                                $url = $ocr_api.OCR_API.'uploadfile';
                                 $data = array('file_dir' => ROOT."/archive/", 'file_name' => $fileName);
                                 $options = array(
                                         'http' => array(
@@ -319,7 +321,7 @@ class SiteController extends BaseController
                                 $context  = stream_context_create($options);
                                 $result = json_decode(file_get_contents($url, false, $context));
                                 if(isset($result->id)) {
-                                    pclose(popen("start php ".ROOT."/protected/models/system/OCRCheck.php ".ROOT."/archive/ ".$result->id, 'w'));
+                                    pclose(popen("start php ".ROOT."/protected/models/system/OCRCheck.php ".ROOT."/archive/ ".$result->id." ".$_SERVER["SERVER_NAME"], 'w'));
                                 }
                             }
                         }
