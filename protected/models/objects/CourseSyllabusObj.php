@@ -7,11 +7,11 @@ class CourseSyllabusObj extends FactoryObj
         "doc"  => null,
         "docx" => null
     );
-            
+
     public function __construct($courseid=null) {
         parent::__construct("id","course_syllabi",$courseid);
     }
-    
+
     public function pre_save() {
         if(!$this->is_valid_id()) {
             $this->id = $this->generate_id();
@@ -24,7 +24,7 @@ class CourseSyllabusObj extends FactoryObj
             $this->term = $this->convertto_string_term($this->term);
         }
     }
-    
+
     public function post_save() {
         if(isset($this->instructors) and !empty($this->instructors)) {
             # Get the current instructors of this course (if exist)
@@ -37,7 +37,7 @@ class CourseSyllabusObj extends FactoryObj
                     )
                 )
                 ->queryAll();
-                
+
             # Pull out the instructor ids into proper array
             $dbinstructors = array();
             foreach($result as $row) {
@@ -93,7 +93,7 @@ class CourseSyllabusObj extends FactoryObj
                 )
             );
     }
-    
+
     public function has_course_instructor($courseid,$instrid) {
         return (Yii::app()->db->createCommand()
             ->select("COUNT(*)")
@@ -101,7 +101,7 @@ class CourseSyllabusObj extends FactoryObj
             ->where("courseid = :courseid AND instrid = :instrid",array(":courseid"=>$courseid,":instrid"=>$instrid))
             ->queryScalar() == 1);
     }
-    
+
     public function generate_id() {
         $this->yearterm = $this->year.$this->convertto_numeric_term($this->term);
         if(isset($this->prefix,$this->num,$this->year,$this->term,$this->section)) {
@@ -117,25 +117,25 @@ class CourseSyllabusObj extends FactoryObj
             return null;
         }
     }
-    
+
     public function break_id() {
-        list($this->prefix,$this->num,$this->yearterm,$this->section) = explode(",",$this->id); 
+        list($this->prefix,$this->num,$this->yearterm,$this->section) = explode(",",$this->id);
     }
-    
+
     protected function convertto_numeric_term($term) {
         switch(str_replace(" ","",strtolower($term))) {
             case "spring":      return 1;
             case "summer":
-            case "summerm": 
-            case "summera": 
-            case "summerb": 
+            case "summerm":
+            case "summera":
+            case "summerb":
             case "summerc":
             case "summerd":    return 4;
             case "fall":       return 7;
             default:           return $term;
         }
     }
-    
+
     protected function convertto_string_term($term) {
         switch($term) {
             case 1:  return "Spring";
@@ -144,7 +144,7 @@ class CourseSyllabusObj extends FactoryObj
             default: return $term;
         }
     }
-    
+
     public function run_check() {
         $required = array(
             "prefix",
@@ -159,32 +159,32 @@ class CourseSyllabusObj extends FactoryObj
                 return !$this->set_error("Class variable <i>".$var."</i> is not set so CourseSyllabusObj could not save.");
             }
         }
-        
+
         # Prefix must be exactly four alphabetical letters
         if(!preg_match("/[A-Z]{4}/i",$this->prefix)) {
             return !$this->set_error("Class variable <i>\$prefix</i> is not formatted properly. Value: {$this->prefix}");
         }
-        
+
         # Number must be exactly four numbers
         if(!preg_match("/[0-9]{4}/",$this->num)) {
             return !$this->set_error("Class variable <i>\$num</i> is not formatted properly. Value: {$this->num}");
         }
-        
+
         # Year must be 19** or 20** (hopefully replaced by the time we get to year 2100!)
         if(!preg_match("/(19|20)[0-9]{2}/",$this->year)) {
             return !$this->set_error("Class variable <i>\$year</i> is not formatted properly. Value: {$this->year}");
         }
-        
+
         # Term must have a numeric equivalent
         $term = $this->convertto_numeric_term($this->term);
         if($term != 1 and $term != 4 and $term != 7) {
             return !$this->set_error("Class variable <i>\$term</i> was not the expected value. Value: {$this->term}");
         }
-        
+
         # No errors, then return success
         return true;
     }
-    
+
     public function num_syllabi()
     {
         return Yii::app()->db->createCommand()
@@ -193,10 +193,10 @@ class CourseSyllabusObj extends FactoryObj
             ->where("prefix = :prefix AND num = :num", array(":prefix"=>$this->prefix, "num"=>$this->num))
             ->queryScalar();
     }
-    
+
     public function year_range()
     {
-        
+
         # Load the earliest year
         $return["minyear"] = Yii::app()->db->createCommand()
             ->select("year")
@@ -204,7 +204,7 @@ class CourseSyllabusObj extends FactoryObj
             ->where("prefix = :prefix AND num = :num", array(":prefix"=>$this->prefix, "num"=>$this->num))
             ->order("year ASC")
             ->queryScalar();
-        
+
         # Load the latest year
         $return["maxyear"] = Yii::app()->db->createCommand()
             ->select("year")
@@ -212,16 +212,16 @@ class CourseSyllabusObj extends FactoryObj
             ->where("prefix = :prefix AND num = :num", array(":prefix"=>$this->prefix, "num"=>$this->num))
             ->order("year DESC")
             ->queryScalar();
-        
+
         return $return;
     }
-    
+
     public function print_span_years()
     {
         $years = $this->year_range();
         echo $years["minyear"]." - ".$years["maxyear"];
     }
-    
+
     public function print_instructors()
     {
         $instructors = $this->get_instructors();
@@ -229,10 +229,10 @@ class CourseSyllabusObj extends FactoryObj
         foreach($instructors as $row) {
             $instructors_array[] = $row["fullname"];
         }
-        
+
         echo implode(", ",$instructors_array);
     }
-    
+
     public function get_instructors() {
         return Yii::app()->db->createCommand()
             ->select("fullname")
@@ -240,7 +240,7 @@ class CourseSyllabusObj extends FactoryObj
             ->where("courseid = :courseid",array("courseid"=>$this->id))
             ->queryAll();
     }
-    
+
     public function get_instrids() {
         return Yii::app()->db->createCommand()
             ->select("instrid")
@@ -248,17 +248,17 @@ class CourseSyllabusObj extends FactoryObj
             ->where("courseid = :courseid",array("courseid"=>$this->id))
             ->queryAll();
     }
-    
+
     public function editable_instructors() {
         $instructors = $this->get_instructors();
         $instructors_array = array();
         foreach($instructors as $row) {
             $instructors_array[] = $row["fullname"];
         }
-        
+
         return implode("\n",$instructors_array);
     }
-    
+
     public function find_syllabus_links()
     {
         foreach($this->syllabus_links as $extension => $file) {
@@ -267,7 +267,7 @@ class CourseSyllabusObj extends FactoryObj
             }
         }
     }
-    
+
     public function has_syllabus_file()
     {
         # Double check we called this function
@@ -281,9 +281,9 @@ class CourseSyllabusObj extends FactoryObj
             }
         }
         return false;
-        
+
     }
-    
+
     public function pre_delete() {
         $this->find_syllabus_links();
         foreach($this->syllabus_links as $ext => $link) {

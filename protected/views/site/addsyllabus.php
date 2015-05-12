@@ -57,9 +57,9 @@ Flashes::render();
           <label for="term" class="col-lg-2 control-label">Term &amp; Year</label>
           <div class="col-lg-10">
             <select class="form-control" name="term" id="term" style="width:200px;display:inline-block;">
-              <option value="1" <?php if(@$_POST["term"] == "Spring") { echo "selected='selected'"; } ?>>Spring</option>
-              <option value="4" <?php if(@$_POST["term"] == "Summer") { echo "selected='selected'"; } ?>>Summer</option>
-              <option value="7" <?php if(@$_POST["term"] == "Fall") { echo "selected='selected'"; } ?>>Fall</option>
+              <option value="1" <?php if(@$_POST["term"] == "1") { echo "selected='selected'"; } ?>>Spring</option>
+              <option value="4" <?php if(@$_POST["term"] == "4") { echo "selected='selected'"; } ?>>Summer</option>
+              <option value="7" <?php if(@$_POST["term"] == "7") { echo "selected='selected'"; } ?>>Fall</option>
             </select>
             <input type="text" class="form-control" name="year" id="year" placeholder="ex. 2015" maxlength="4" value="<?php echo @$_POST["year"]; ?>" style="width:140px;display:inline-block;">
             <div class="help-block error-block text-danger" style="display:none;"></div>

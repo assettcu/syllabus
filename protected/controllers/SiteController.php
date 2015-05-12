@@ -6,7 +6,7 @@ class SiteController extends BaseController
 {
 	/** DEFAULT ACTIONS **/
 	public function actionIndex()
-	{		
+	{
 		$this->render('index');
 	}
 
@@ -25,15 +25,15 @@ class SiteController extends BaseController
 	{
 		// Force log out
 		if(!Yii::app()->user->isGuest) Yii::app()->user->logout();
-		
+
 		$this->makeSSL();
 		$params = array();
 		$model = new LoginForm;
 		$redirect = (isset($_REQUEST["redirect"])) ? $_REQUEST["redirect"] : "index";
-		
+
 		// collect user input data
 		if (isset($_POST['username']) and isset($_POST["password"])) {
-			
+
 			$model->username = $_POST["username"];
 			$model->password = $_POST["password"];
 			// validate user input and redirect to the previous page if valid
@@ -42,9 +42,9 @@ class SiteController extends BaseController
 				$this->redirect($redirect);
 			}
 		}
-		
+
 		$params["model"] = $model;
-		
+
 		// display the login form
 		$this->render('login',$params);
 	}
@@ -65,7 +65,7 @@ class SiteController extends BaseController
             StdLib::Functions();
             try {
                 if(is_valid_form_id($_POST["uniqueformid"], $_POST["datetime"])) {
-                    
+
                     # Grab the syllabus file and start up the File System
                     $file = $_FILES["syllabus"];
                     $fileparts = pathinfo($file["name"]);
@@ -80,7 +80,7 @@ class SiteController extends BaseController
                     }
                     $file_locations = $fs->get_files_uploaded_location();
                     $file_location = @$file_locations[0];
-                    
+
                     $sections = explode(",",$_POST["section"]);
                     # Check the User permissions.
                     # For now we are allowing any managers to have access to upload syllabi to the Archive
@@ -90,7 +90,7 @@ class SiteController extends BaseController
                     }
                     # See if we saved a syllabus (maybe multiple sections and one section already exists)
                     $saved_at_least_one = FALSE;
-                    
+
                     # Loop through each section and save each as a separate class
                     foreach($sections as $section) {
                         $section = trim($section);
@@ -115,10 +115,13 @@ class SiteController extends BaseController
                             Yii::app()->user->setFlash('warning',"One Course Syllabus section already exists. The system skipped overwriting this course syllabus.");
                             continue;
                         }
-                        
+
                         # Add Instructors to Course Syllabus
                         $instructors = explode("\n",$_POST["instructors"]);
                         foreach($instructors as $fullname) {
+                            if(empty($fullname)){
+                                continue;
+                            }
                             $instructor = new InstructorObj();
                             $instructor->name = $fullname;
                             $instructor->load();
@@ -135,7 +138,7 @@ class SiteController extends BaseController
                         if(!$CS->save()) {
                             throw new Exception("Could not save Course Syllabus: ".$CS->get_error());
                         }
-                        
+
                         # Move file to permanent home in the archive
                         $fileName = $CS->id.".".$fileparts["extension"];
                         copy($file_location, ROOT."/archive/".$fileName);
@@ -173,7 +176,7 @@ class SiteController extends BaseController
                                     array(":id"=> $CS->id)
                             );
                         }
-                        
+
                         # Made it to here? We must have saved at least one course syllabus!
                         $saved_at_least_one = TRUE;
                     }
@@ -181,7 +184,7 @@ class SiteController extends BaseController
                 else {
                     throw new Exception("Malformed form ID.");
                 }
-                
+
                 # Let's set a message that we saved at least one file
                 if($saved_at_least_one) {
                     Yii::app()->user->setFlash("success","Successfully saved course syllabus to the archive!");
@@ -193,7 +196,7 @@ class SiteController extends BaseController
                 else {
                     Yii::app()->user->setFlash("info","Did not save any course syllabi.");
                 }
-                
+
                 # Remove the temporary file
                 if(is_file($file_location)) {
                     unlink($file_location);
@@ -204,19 +207,19 @@ class SiteController extends BaseController
                 Yii::app()->user->setFlash("warning",$e->getMessage());
             }
         }
-        
+
         $this->render('addsyllabus');
     }
 
     public function actionEdit() {
         $this->noGuest();
-        
+
         if(!isset($_REQUEST["id"])) {
             Yii::app()->user->setFlash('warning','Cannot edit: Invalid course syllabus ID.');
             $this->redirect('index');
             exit;
         }
-        
+
         $CS = new CourseSyllabusObj($_REQUEST["id"]);
         if(!$CS->loaded) {
             Yii::app()->user->setFlash('warning','Could not load Course Syllabus. Something went really wrong.');
@@ -226,13 +229,13 @@ class SiteController extends BaseController
         $syllabus = LOCAL_ARCHIVE.$CS->id;
         $CS->find_syllabus_links();
         $syllabus_links = $CS->syllabus_links;
-        
+
         # See if a topic/link was submitted
         if(isset($_POST["uniqueformid"],$_POST["datetime"])) {
             StdLib::Functions();
             try {
                 if(is_valid_form_id($_POST["uniqueformid"], $_POST["datetime"])) {
-                    
+
                     unset($CS->id);
                     # Grab the syllabus file and start up the File System
                     $file = $_FILES["syllabus"];
@@ -251,7 +254,7 @@ class SiteController extends BaseController
                         $file_locations = $fs->get_files_uploaded_location();
                         $file_location = @$file_locations[0];
                     }
-                    
+
                     $sections = explode(",",$_POST["section"]);
                     # Check the User permissions.
                     # For now we are allowing any managers to have access to upload syllabi to the Archive
@@ -261,10 +264,10 @@ class SiteController extends BaseController
                     }
                     # See if we saved a syllabus (maybe multiple sections and one section already exists)
                     $saved_at_least_one = FALSE;
-                    
+
                     # Loop through each section and save each as a separate class
                     foreach($sections as $section) {
-                        
+
                         $section = trim($section);
                         if(!preg_match("/[0-9]{3}/",$section)) {
                             continue;
@@ -273,16 +276,19 @@ class SiteController extends BaseController
                         $CS->section = $section;
                         $CS->id = $CS->generate_id();
                         $CS->load();
-                        
+
                         $CS->title = $_POST["title"];
                         $CS->special_topics_title = $_POST["special_topics_title"];
                         $CS->recitation = $_POST["recitation"];
                         $CS->restricted = $_POST["restricted"];
                         $CS->section = $section;
-                        
+
                         # Add Instructors to Course Syllabus
                         $instructors = explode("\n",$_POST["instructors"]);
                         foreach($instructors as $fullname) {
+                            if(empty($fullname)){
+                                continue;
+                            }
                             $instructor = new InstructorObj();
                             $instructor->name = $fullname;
                             $instructor->load();
@@ -294,10 +300,10 @@ class SiteController extends BaseController
                             }
                             $CS->instructors[] = $instructor->instrid;
                         }
-                        
+                        die($CS);
                         $CS->id = $CS->generate_id();
                         $CS->find_syllabus_links();
-                        
+
                         if(!$CS->has_syllabus_file()) {
                             foreach($syllabus_links as $ext => $link) {
                                 if(!is_null($link)) {
@@ -305,12 +311,12 @@ class SiteController extends BaseController
                                 }
                             }
                         }
-                        
+
                         # Save!
                         if(!$CS->save()) {
                             throw new Exception("Could not save Course Syllabus: ".$CS->get_error());
                         }
-                        
+
                         # If the user added a file, let's continue with upload
                         if($file["size"] != 0) {
                             # Move file to permanent home in the archive
@@ -351,7 +357,7 @@ class SiteController extends BaseController
                                     );
                             }
                         }
-                        
+
                         # Made it to here? We must have saved at least one course syllabus!
                         $saved_at_least_one = TRUE;
                     }
@@ -359,7 +365,7 @@ class SiteController extends BaseController
                 else {
                     throw new Exception("Malformed form ID.");
                 }
-                
+
                 # Let's set a message that we saved at least one file
                 if($saved_at_least_one) {
                     Yii::app()->user->setFlash("success","Successfully saved course syllabus to the archive!");
@@ -375,7 +381,7 @@ class SiteController extends BaseController
                 else {
                     Yii::app()->user->setFlash("info","Did not save any course syllabi.");
                 }
-                
+
                 # Remove the temporary file
                 if(isset($file_location) and is_file($file_location)) {
                     unlink($file_location);
@@ -386,10 +392,10 @@ class SiteController extends BaseController
                 Yii::app()->user->setFlash("warning",$e->getMessage());
             }
         }
-        
+
         $this->render('editsyllabus', array("CS"=>$CS));
     }
-    
+
 	public function actionCourse()
     {
         if(isset($_GET["prefix"],$_GET["num"])) {
@@ -401,7 +407,7 @@ class SiteController extends BaseController
             $this->redirect(Yii::app()->homeUrl);
         }
     }
-	
+
 	public function actionSearch()
 	{
 		$this->render("search");
@@ -411,7 +417,7 @@ class SiteController extends BaseController
 	{
 		$this->render("aboutus");
 	}
-	
+
 	public function actionRunOnce()
 	{
 	    if(!StdLib::is_programmer()) {
