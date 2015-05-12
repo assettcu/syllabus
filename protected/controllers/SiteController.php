@@ -59,7 +59,7 @@ class SiteController extends BaseController
 	/** NORMAL PAGES **/
     public function actionAdd() {
         $this->noGuest();
-        
+
         # See if a topic/link was submitted
         if(isset($_POST["uniqueformid"],$_POST["datetime"])) {
             StdLib::Functions();
@@ -107,7 +107,7 @@ class SiteController extends BaseController
                         $CS->recitation = $_POST["recitation"];
                         $CS->restricted = $_POST["restricted"];
                         $CS->section = $section;
-                        
+
                         # See if this Course Syllabus exists and if we have permission to overwrite
                         $CS->id = $CS->generate_id();
                         $CS->load();
@@ -130,7 +130,7 @@ class SiteController extends BaseController
                             }
                             $CS->instructors[] = $instructor->instrid;
                         }
-                        
+
                         # Save!
                         if(!$CS->save()) {
                             throw new Exception("Could not save Course Syllabus: ".$CS->get_error());
@@ -159,6 +159,19 @@ class SiteController extends BaseController
                             if(isset($result->id)) {
                                 pclose(popen("start php ".ROOT."/protected/models/system/OCRCheck.php ".ROOT."/archive/ ".$result->id." ".$_SERVER["SERVER_NAME"], 'w'));
                             }
+                        }
+                        else if($fileparts["extension"] == "docx") {
+
+                            $content = read_zipped_xml(ROOT."/archive/".$fileName,"word/document.xml");
+
+                            Yii::app()->db->createCommand()
+                                ->update("course_syllabi",
+                                    array(
+                                        "content" => $content
+                                    ),
+                                    "id=:id",
+                                    array(":id"=> $CS->id)
+                            );
                         }
                         
                         # Made it to here? We must have saved at least one course syllabus!
@@ -311,7 +324,7 @@ class SiteController extends BaseController
                                 $url = $ocr_api.OCR_API.'uploadfile';
                                 $data = array('file_dir' => ROOT."/archive/", 'file_name' => $fileName);
                                 $options = array(
-                                        'http' => array(
+                                    'http' => array(
                                         'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
                                         'method'  => 'POST',
                                         'content' => http_build_query($data),
@@ -323,6 +336,19 @@ class SiteController extends BaseController
                                 if(isset($result->id)) {
                                     pclose(popen("start php ".ROOT."/protected/models/system/OCRCheck.php ".ROOT."/archive/ ".$result->id." ".$_SERVER["SERVER_NAME"], 'w'));
                                 }
+                            }
+                            else if($fileparts["extension"] == "docx") {
+
+                                $content = read_zipped_xml(ROOT."/archive/".$fileName,"word/document.xml");
+
+                                Yii::app()->db->createCommand()
+                                    ->update("course_syllabi",
+                                        array(
+                                            "content" => $content
+                                        ),
+                                        "id=:id",
+                                        array(":id"=> $CS->id)
+                                    );
                             }
                         }
                         

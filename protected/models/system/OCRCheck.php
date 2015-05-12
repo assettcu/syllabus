@@ -55,6 +55,16 @@ if($success) {
         $copied = copy($full_path, $destination_dir.$response->file_name);
         writeToLog("OCRCheck copied file ".$file_id.".");
 
+        // Get text if Syllabus is a PDF
+        $path_parts  = pathinfo($full_path);
+        if(strtolower($path_parts['extension']) == "pdf") {
+            $textFile = $response->file_path.$path_parts['filename'] . ".txt";
+            writeToLog($textFile);
+
+            // Save text to database
+            persistSyllabusContent($textFile);
+        }
+
         // Remove file from OCRout folder
         $removeUrl = $ocr_api."removefile?file_id=".$file_id;
         curl_setopt($ch, CURLOPT_URL, $removeUrl);
@@ -89,6 +99,45 @@ function writeToLog($line) {
     $log = fopen("c:/web/ocr_log.txt", "a") or die("Unable to open file!");
     fwrite($log, $line);
     fclose($log);
+}
+
+// Get syllabus text file and add contents to database
+function persistSyllabusContent($file) {
+    // MYSQL HARDCODED VALUES 
+    $servername = "localhost";
+    $username = "c_syllabus";
+    $password = "defeudalizing phorrhea emblematized althein";
+    $dbname = "c_syllabus";
+
+
+    writeToLog($file);
+    if (is_file($file)) {
+        // Connect to MySQL Database
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        if ($conn->connect_error) {
+            writeToLog("Connection failed: " . $conn->connect_error);
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        // Prepare SQL statement
+        $sth = $conn->prepare("UPDATE course_syllabi SET content = ? WHERE id = ?");
+        $sth->bind_param('ss', $content, $id);
+
+        // Get Syllabus ID from filename
+        $id = substr(basename($file), 0, -4);
+
+        // Open Text file and read contents
+        $myfile = fopen($file, "r") or die("Unable to open file!");
+        $content = fread($myfile,filesize($file));
+        fclose($myfile);
+        $content = preg_replace('/[^a-zA-Z0-9\s]/', '', $content);
+
+        // Update database
+        $sth->send_long_data(0, $content);
+        $sth->execute();
+        $sth->close();
+        $conn->close();
+    }
 }
 
 ?>
