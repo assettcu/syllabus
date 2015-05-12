@@ -125,6 +125,7 @@ class CourseSyllabusObj extends FactoryObj
     protected function convertto_numeric_term($term) {
         switch(str_replace(" ","",strtolower($term))) {
             case "spring":      return 1;
+            case "summer":
             case "summerm": 
             case "summera": 
             case "summerb": 

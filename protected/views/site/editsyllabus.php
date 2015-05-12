@@ -139,7 +139,7 @@ Flashes::render();
                       <input type="radio" name="ocr" id="ocr-no" value="no" <?php if(@$_POST["restriction"] == "yes") { echo "checked"; } ?> checked> No
                   </label>
               </div>
-              <div class="help-block error-block"><i>*Not available yet*</i> Running TextOverlay on a syllabus PDF will make it text searchable and more accessible for screen readers.</div>
+              <div class="help-block error-block">Running TextOverlay on a syllabus PDF will make it text searchable and more accessible for screen readers.</div>
           </div>
         </div>
         <div class="form-group" id="form-group-8">
