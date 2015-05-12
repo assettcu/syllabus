@@ -3,7 +3,6 @@ archive/*.*
 !assets/.gitignore
 protected/runtime/*
 !protected/runtime/.gitignore
-protected/data/*.db
 protected/config/main-ext.php
 protected/views/site/runonce.php
 themes/classic/views/
@@ -11,5 +10,4 @@ themes/classic/views/
 .idea
 .gitignore
 .project
-.settings
 *.iml
