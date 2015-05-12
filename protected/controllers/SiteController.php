@@ -4,59 +4,59 @@ require "BaseController.php";
 
 class SiteController extends BaseController
 {
-	/** DEFAULT ACTIONS **/
-	public function actionIndex()
-	{
-		$this->render('index');
-	}
+    /** DEFAULT ACTIONS **/
+    public function actionIndex()
+    {
+        $this->render('index');
+    }
 
-	public function actionError()
-	{
-	    if($error=Yii::app()->errorHandler->error) {
-	    	if(Yii::app()->request->isAjaxRequest) {
-	    		echo $error['message'];
-	    	} else {
-	        	$this->render('error', $error);
-			}
-	    }
-	}
+    public function actionError()
+    {
+        if($error=Yii::app()->errorHandler->error) {
+            if(Yii::app()->request->isAjaxRequest) {
+                echo $error['message'];
+            } else {
+                $this->render('error', $error);
+            }
+        }
+    }
 
-	public function actionLogin()
-	{
-		// Force log out
-		if(!Yii::app()->user->isGuest) Yii::app()->user->logout();
+    public function actionLogin()
+    {
+        // Force log out
+        if(!Yii::app()->user->isGuest) Yii::app()->user->logout();
 
-		$this->makeSSL();
-		$params = array();
-		$model = new LoginForm;
-		$redirect = (isset($_REQUEST["redirect"])) ? $_REQUEST["redirect"] : "index";
+        $this->makeSSL();
+        $params = array();
+        $model = new LoginForm;
+        $redirect = (isset($_REQUEST["redirect"])) ? $_REQUEST["redirect"] : "index";
 
-		// collect user input data
-		if (isset($_POST['username']) and isset($_POST["password"])) {
+        // collect user input data
+        if (isset($_POST['username']) and isset($_POST["password"])) {
 
-			$model->username = $_POST["username"];
-			$model->password = $_POST["password"];
-			// validate user input and redirect to the previous page if valid
-			if ($model->validate() && $model->login())
-			{
-				$this->redirect($redirect);
-			}
-		}
+            $model->username = $_POST["username"];
+            $model->password = $_POST["password"];
+            // validate user input and redirect to the previous page if valid
+            if ($model->validate() && $model->login())
+            {
+                $this->redirect($redirect);
+            }
+        }
 
-		$params["model"] = $model;
+        $params["model"] = $model;
 
-		// display the login form
-		$this->render('login',$params);
-	}
+        // display the login form
+        $this->render('login',$params);
+    }
 
 
-	public function actionLogout()
-	{
-		Yii::app()->user->logout();
-		$this->redirect(Yii::app()->homeUrl);
-	}
+    public function actionLogout()
+    {
+        Yii::app()->user->logout();
+        $this->redirect(Yii::app()->homeUrl);
+    }
 
-	/** NORMAL PAGES **/
+    /** NORMAL PAGES **/
     public function actionAdd() {
         $this->noGuest();
 
@@ -150,7 +150,7 @@ class SiteController extends BaseController
                             $url = $ocr_api.OCR_API.'uploadfile';
                             $data = array('file_dir' => ROOT."/archive/", 'file_name' => $fileName);
                             $options = array(
-                                    'http' => array(
+                                'http' => array(
                                     'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
                                     'method'  => 'POST',
                                     'content' => http_build_query($data),
@@ -174,7 +174,7 @@ class SiteController extends BaseController
                                     ),
                                     "id=:id",
                                     array(":id"=> $CS->id)
-                            );
+                                );
                         }
 
                         # Made it to here? We must have saved at least one course syllabus!
@@ -202,7 +202,7 @@ class SiteController extends BaseController
                     unlink($file_location);
                 }
             }
-            # Exception handling here
+                # Exception handling here
             catch(Exception $e) {
                 Yii::app()->user->setFlash("warning",$e->getMessage());
             }
@@ -300,7 +300,6 @@ class SiteController extends BaseController
                             }
                             $CS->instructors[] = $instructor->instrid;
                         }
-                        die($CS);
                         $CS->id = $CS->generate_id();
                         $CS->find_syllabus_links();
 
@@ -387,7 +386,7 @@ class SiteController extends BaseController
                     unlink($file_location);
                 }
             }
-            # Exception handling here
+                # Exception handling here
             catch(Exception $e) {
                 Yii::app()->user->setFlash("warning",$e->getMessage());
             }
@@ -396,7 +395,7 @@ class SiteController extends BaseController
         $this->render('editsyllabus', array("CS"=>$CS));
     }
 
-	public function actionCourse()
+    public function actionCourse()
     {
         if(isset($_GET["prefix"],$_GET["num"])) {
             $params["prefix"] = $_GET["prefix"];
@@ -408,28 +407,28 @@ class SiteController extends BaseController
         }
     }
 
-	public function actionSearch()
-	{
-		$this->render("search");
-	}
+    public function actionSearch()
+    {
+        $this->render("search");
+    }
 
-	public function actionAboutUs()
-	{
-		$this->render("aboutus");
-	}
+    public function actionAboutUs()
+    {
+        $this->render("aboutus");
+    }
 
-	public function actionRunOnce()
-	{
-	    if(!StdLib::is_programmer()) {
-	        Yii::app()->user->setFlash("error","You do not have access to this page.");
-	        $this->redirect('index');
+    public function actionRunOnce()
+    {
+        if(!StdLib::is_programmer()) {
+            Yii::app()->user->setFlash("error","You do not have access to this page.");
+            $this->redirect('index');
             exit;
-	    }
-		$this->render("runonce");
-	}
+        }
+        $this->render("runonce");
+    }
 
-	public function actionMaintenance()
-	{
-		$this->render("maintenance");
-	}
+    public function actionMaintenance()
+    {
+        $this->render("maintenance");
+    }
 }
