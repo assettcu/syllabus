@@ -8,6 +8,8 @@ protected/config/main-ext.php
 protected/views/site/runonce.php
 themes/classic/views/
 *.db
+.idea
 .gitignore
 .project
 .settings
+*.iml
