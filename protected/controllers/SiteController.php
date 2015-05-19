@@ -26,7 +26,7 @@ class SiteController extends BaseController
         // Force log out
         if(!Yii::app()->user->isGuest) Yii::app()->user->logout();
 
-        $this->makeSSL();
+        $this->makeSSL(); //comment
         $params = array();
         $model = new LoginForm;
         $redirect = (isset($_REQUEST["redirect"])) ? $_REQUEST["redirect"] : "index";
