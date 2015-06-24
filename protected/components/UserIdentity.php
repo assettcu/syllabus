@@ -22,9 +22,9 @@ class UserIdentity extends CUserIdentity
 		if($info["count"] == 1) {
 		    $user->fullname = $info[0]["displayname"][0];
 		}
-        if(!$user->save()) {
+        /*if(!$user->save()) {
             StdLib::vdump($user->get_error());
-        }
+        }*/
         
 		if($this->errorCode!=0) {
 			if($this->errorCode!=4){
